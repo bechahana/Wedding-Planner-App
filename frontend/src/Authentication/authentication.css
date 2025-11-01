@@ -1,0 +1,164 @@
+/* ===================== General Layout ===================== */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .auth-container {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 550px;              /* wider box */
+    border-radius: 24px;
+    padding: 3rem 3rem 3.5rem;     /* more internal space */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .auth-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15);
+  }
+  
+  .auth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111;
+    text-align: center;
+    margin-bottom: 0.25rem;
+  }
+  
+  .auth-subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+  
+  /* ===================== Form ===================== */
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  
+  .auth-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.2rem;
+  }
+  
+  .auth-input {
+    width: 100%;
+    padding: 0.85rem 1rem;         /* larger input height */
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+  
+  .auth-input:focus {
+    outline: none;
+    border-color: #e60023;
+    box-shadow: 0 0 0 2px rgba(230, 0, 35, 0.12);
+  }
+  
+  .auth-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #444;
+  }
+  
+  .auth-checkbox input {
+    accent-color: #e60023;
+  }
+  
+  .auth-error {
+    color: #e60023;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 0.8rem;
+  }
+  
+  /* ===================== Buttons ===================== */
+  .auth-btn {
+    width: 100%;
+    background-color: #111;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem;              /* taller button */
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .auth-btn:hover {
+    background-color: #e60023;
+  }
+  
+  .auth-secondary {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+  }
+  
+  .auth-secondary button {
+    background: none;
+    border: none;
+    color: #e60023;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  
+  .auth-secondary button:hover {
+    text-decoration: underline;
+  }
+  
+  /* ===================== Password Toggle ===================== */
+  .auth-password-toggle {
+    position: relative;
+  }
+  
+  .auth-password-toggle button {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  
+  /* ===================== Responsive ===================== */
+  @media (max-width: 480px) {
+    .auth-container {
+      max-width: 90%;
+      padding: 2rem;
+    }
+  
+    .auth-title {
+      font-size: 1.6rem;
+    }
+  
+    .auth-subtitle {
+      font-size: 0.9rem;
+    }
+    .password-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+      
+  }
+  
