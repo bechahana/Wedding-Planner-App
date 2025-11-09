@@ -1,0 +1,459 @@
+/* ===================== User Pages Layout ===================== */
+.user-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+  font-family: 'Inter', sans-serif;
+  padding: 2rem 1rem;
+}
+
+.user-container {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 1200px;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15);
+}
+
+.user-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 0.25rem;
+}
+
+.user-subtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+/* ===================== Buttons ===================== */
+.user-btn {
+  background-color: #111;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.85rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-btn:hover {
+  background-color: #e60023;
+}
+
+.user-btn-secondary {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 0.85rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-btn-secondary:hover {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
+.user-btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.user-btn-link {
+  background: none;
+  border: none;
+  color: #e60023;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.user-btn-link:hover {
+  text-decoration: underline;
+}
+
+.user-btn-danger {
+  background-color: #dc2626;
+  color: white;
+}
+
+.user-btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.user-btn-success {
+  background-color: #22c55e;
+  color: white;
+}
+
+.user-btn-success:hover {
+  background-color: #16a34a;
+}
+
+/* ===================== Form Elements ===================== */
+.user-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.user-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.user-input:focus {
+  outline: none;
+  border-color: #e60023;
+  box-shadow: 0 0 0 2px rgba(230, 0, 35, 0.12);
+}
+
+.user-select {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  background-color: white;
+  cursor: pointer;
+}
+
+.user-select:focus {
+  outline: none;
+  border-color: #e60023;
+  box-shadow: 0 0 0 2px rgba(230, 0, 35, 0.12);
+}
+
+.user-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #444;
+  cursor: pointer;
+}
+
+.user-checkbox input {
+  accent-color: #e60023;
+  cursor: pointer;
+}
+
+.user-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #444;
+  cursor: pointer;
+}
+
+.user-radio input {
+  accent-color: #e60023;
+  cursor: pointer;
+}
+
+/* ===================== Cards ===================== */
+.user-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.user-card:hover {
+  border-color: #e60023;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.user-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+
+.user-card-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.75rem;
+}
+
+.user-card-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111;
+}
+
+/* ===================== Grid Layouts ===================== */
+.user-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.user-grid-2 {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.user-grid-3 {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.user-grid-4 {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+/* ===================== Sidebar ===================== */
+.user-sidebar {
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 1.5rem;
+  height: fit-content;
+}
+
+.user-sidebar-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.user-sidebar-item {
+  padding: 1rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  background-color: #fafafa;
+}
+
+.user-sidebar-item-title {
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 0.25rem;
+}
+
+.user-sidebar-item-text {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* ===================== Badges & Status ===================== */
+.user-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.user-badge-success {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.user-badge-danger {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.user-badge-info {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+/* ===================== Messages ===================== */
+.user-alert {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.user-alert-warning {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.user-alert-success {
+  background-color: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #166534;
+}
+
+.user-alert-error {
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+.user-alert-info {
+  background-color: #eff6ff;
+  border: 1px solid #93c5fd;
+  color: #1e40af;
+}
+
+/* ===================== Navigation ===================== */
+.user-nav {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.user-nav-item {
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #666;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-nav-item:hover {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
+.user-nav-item.active {
+  background-color: #111;
+  color: white;
+  border-color: #111;
+}
+
+.user-nav-item.active:hover {
+  background-color: #e60023;
+  border-color: #e60023;
+}
+
+/* ===================== Back Button ===================== */
+.user-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.user-back:hover {
+  color: #e60023;
+}
+
+/* ===================== Responsive ===================== */
+@media (max-width: 768px) {
+  .user-container {
+    padding: 1.5rem;
+  }
+
+  .user-title {
+    font-size: 1.6rem;
+  }
+
+  .user-grid-2,
+  .user-grid-3,
+  .user-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .user-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+/* ===================== Two Column Layout ===================== */
+.user-two-column {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .user-two-column {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===================== Section ===================== */
+.user-section {
+  margin-bottom: 2rem;
+}
+
+.user-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 1rem;
+}
+
+/* ===================== Empty State ===================== */
+.user-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+}
+
+.user-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.user-empty-text {
+  font-size: 1rem;
+  color: #666;
+}
+
