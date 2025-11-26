@@ -1,0 +1,278 @@
+/* -----------------------------
+   GLOBAL
+------------------------------ */
+body {
+    margin: 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #444;
+  }
+  
+  /* Smooth all buttons + links */
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* -----------------------------
+     NAVBAR
+  ------------------------------ */
+  .nav {
+    background-color: #ffffff;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  
+  .nav .container {
+    width: 90%;
+    margin: 0 auto;
+  }
+  
+  .brand {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #6d6d6d;
+  }
+  
+  /* -----------------------------
+     HOME WRAPPER
+  ------------------------------ */
+  .home-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  
+  /* Elegant white card */
+  .home-card {
+    background-color: #ffffff;
+    padding: 40px 35px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 650px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    text-align: center;
+  }
+  
+  /* -----------------------------
+     TEXT STYLING
+  ------------------------------ */
+  .wedding-title {
+    margin-bottom: 10px;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #3a3a3a;
+  }
+  
+  .wedding-message {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #666666;
+    margin-bottom: 30px;
+  }
+  
+  /* -----------------------------
+     BUTTONS
+  ------------------------------ */
+  
+  .home-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* Large elegant buttons */
+  .btn-large {
+    padding: 14px 18px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    display: block;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+  
+  /* Not colorful — soft elegant tones */
+  .btn-violet {
+    background-color: #ece9f0;   /* soft grey-lavender */
+    border: 1px solid #dcd8e2;
+    color: #4d4d4d;
+  }
+  
+  .btn-violet:hover {
+    background-color: #e4e1ea;
+  }
+  
+  .btn-gold {
+    background-color: #f3f2ed;   /* soft ivory */
+    border: 1px solid #e4e2db;
+    color: #4d4d4d;
+  }
+  
+  .btn-gold:hover {
+    background-color: #eae9e3;
+  }
+  /* -------------------------------------------------------
+     GLOBAL PAGE STYLING (wedding theme)
+  ------------------------------------------------------- */
+  body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #fff5f8, #f8f4ff);
+    color: #444;
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* -------------------------------------------------------
+     NAVBAR
+  ------------------------------------------------------- */
+  .nav {
+    background: #ffffffcc;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #f0d9e9;
+    padding: 14px 0;
+  }
+  
+  .nav .container {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+  }
+  
+  .brand {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #b33c86; /* soft romantic rose */
+  }
+  
+  /* -------------------------------------------------------
+     PAGE WRAPPER (Add Photos)
+  ------------------------------------------------------- */
+  .add-photos-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 50px 20px;
+  }
+  
+  /* Clean wedding card */
+  .add-photos-card {
+    background: #ffffffdd;
+    backdrop-filter: blur(10px);
+    padding: 40px 45px;
+    border-radius: 16px;
+    max-width: 750px;
+    width: 100%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+    animation: fadeIn 0.6s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* -------------------------------------------------------
+     TITLES AND TEXT
+  ------------------------------------------------------- */
+  .add-title {
+    font-size: 2rem;
+    color: #b33c86; /* romantic pink */
+    margin-bottom: 5px;
+    font-weight: 700;
+  }
+  
+  .add-subtitle {
+    margin-top: 0;
+    font-size: 1.35rem;
+    color: #6a4bac; /* soft lavender */
+    font-weight: 600;
+  }
+  
+  .add-description {
+    color: #666;
+    margin-bottom: 35px;
+    font-size: 1rem;
+  }
+  
+  /* -------------------------------------------------------
+     FORM STYLING
+  ------------------------------------------------------- */
+  .add-form label {
+    display: block;
+    margin-bottom: 6px;
+    margin-top: 15px;
+    font-weight: 500;
+    color: #444;
+  }
+  
+  .add-form input[type="text"],
+  .add-form textarea,
+  .add-form input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e6c5e4;
+    border-radius: 8px;
+    background: #fdf7ff;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border 0.2s;
+  }
+  
+  .add-form input[type="text"]:focus,
+  .add-form textarea:focus {
+    border-color: #b33c86;
+    outline: none;
+  }
+  
+  .checkbox-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  
+  /* -------------------------------------------------------
+     UPLOAD BUTTON
+  ------------------------------------------------------- */
+  .btn-upload {
+    width: 100%;
+    margin-top: 25px;
+    padding: 14px;
+    background: linear-gradient(135deg, #b33c86, #6a4bac);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(179, 60, 134, 0.3);
+    transition: 0.25s ease;
+  }
+  
+  .btn-upload:hover {
+    background: linear-gradient(135deg, #d94fa6, #8562d1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(179, 60, 134, 0.4);
+  }
+  
+  .btn-upload:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* Small status bubbles */
+  .status-badge {
+    background: #fff0fa;
+    color: #b33c86;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+   
