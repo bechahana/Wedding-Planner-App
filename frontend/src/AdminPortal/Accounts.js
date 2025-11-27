@@ -2,25 +2,52 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./admin.css";
 
-const API_BASE = "http://localhost:5000"; // ⬅️ change if your backend uses a different origin
+const API_BASE = "http://localhost:5000"; // change if your backend URL is different
 
 export default function Accounts() {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("All"); // All | Admin | User | Guest
+  const [roleFilter, setRoleFilter] = useState("All"); // All | Admin | User 
 
-  // fetch accounts
+  // Fetch accounts from backend
   useEffect(() => {
     let mounted = true;
+
     (async () => {
       try {
         setLoading(true);
         const res = await axios.get(`${API_BASE}/api/accounts`);
-        if (mounted) setAccounts(res.data || []);
+
+        if (!mounted) return;
+
+        const data = res.data;
+        let list = Array.isArray(data) ? data : data.accounts || [];
+
+        // Normalize for UI (role names + active flag)
+        list = list.map((acc) => ({
+          ...acc,
+          // DB might have ADMIN / USER  – show pretty labels
+          role:
+            acc.role === "ADMIN"
+              ? "Admin"
+              : acc.role === "USER"
+              ? "User"
+              : acc.role,
+          // derive boolean "active" from status if present
+          active: acc.status
+            ? acc.status.toUpperCase() !== "BANNED"
+            : true,
+        }));
+
+        setAccounts(list);
+        setErr("");
       } catch (e) {
-        console.warn("No backend yet or request failed, showing empty list.");
+        console.warn(
+          "No backend yet or request failed, showing empty list.",
+          e
+        );
         if (mounted) {
           setErr("Failed to load accounts from server.");
           setAccounts([]); // keep layout visible
@@ -29,24 +56,31 @@ export default function Accounts() {
         if (mounted) setLoading(false);
       }
     })();
-    return () => (mounted = false);
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  // search + filter
+  // Search + role filter
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
-    return accounts.filter((a) => {
+    const list = Array.isArray(accounts) ? accounts : [];
+
+    return list.filter((a) => {
       const matchesText =
         !term ||
         a.full_name?.toLowerCase().includes(term) ||
         a.email?.toLowerCase().includes(term);
+
       const matchesRole =
         roleFilter === "All" || a.role === roleFilter;
+
       return matchesText && matchesRole;
     });
   }, [accounts, search, roleFilter]);
 
-  // optimistic ban/unban
+  // Optimistic ban / unban (server routes can be added later)
   async function toggleBan(acc) {
     const action = acc.active ? "ban" : "unban";
     const confirmMsg = acc.active
@@ -54,17 +88,21 @@ export default function Accounts() {
       : `Unban ${acc.full_name || acc.email}?`;
     if (!window.confirm(confirmMsg)) return;
 
-    // optimistic update
     const prev = [...accounts];
+
+    // optimistic update
     setAccounts((list) =>
-      list.map((x) => (x.id === acc.id ? { ...x, active: !acc.active } : x))
+      list.map((x) =>
+        x.id === acc.id ? { ...x, active: !acc.active } : x
+      )
     );
 
     try {
+      // backend: PATCH /api/accounts/:id/ban or /unban
       await axios.patch(`${API_BASE}/api/accounts/${acc.id}/${action}`);
     } catch (e) {
       alert(`Failed to ${action}. Reverting.`);
-      setAccounts(prev); // revert
+      setAccounts(prev); // revert if request fails
     }
   }
 
@@ -73,7 +111,14 @@ export default function Accounts() {
 
   return (
     <div className="panel">
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 12,
+        }}
+      >
         <h2 style={{ margin: 0, flex: 1 }}>Accounts</h2>
 
         <select
@@ -84,7 +129,6 @@ export default function Accounts() {
           <option>All</option>
           <option>Admin</option>
           <option>User</option>
-          <option>Guest</option>
         </select>
 
         <input
@@ -97,7 +141,13 @@ export default function Accounts() {
       </div>
 
       {err && (
-        <div style={{ color: "#b42318", marginBottom: 10, fontSize: 14 }}>
+        <div
+          style={{
+            color: "#b42318",
+            marginBottom: 10,
+            fontSize: 14,
+          }}
+        >
           {err}
         </div>
       )}
@@ -123,7 +173,15 @@ export default function Accounts() {
             </tr>
           ) : filtered.length === 0 ? (
             <tr>
-              <td colSpan="6" style={{ textAlign: "center", padding: 20, color: "#777", fontStyle: "italic" }}>
+              <td
+                colSpan="6"
+                style={{
+                  textAlign: "center",
+                  padding: 20,
+                  color: "#777",
+                  fontStyle: "italic",
+                }}
+              >
                 No accounts found.
               </td>
             </tr>
@@ -162,11 +220,24 @@ export default function Accounts() {
 }
 
 function RoleBadge({ role }) {
-  const style = {
-    Admin: { background: "#111", color: "#fff" },
-    User: { background: "#eef2ff", color: "#1e3a8a", border: "1px solid #c7d2fe" },
-    Guest: { background: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0" },
-  }[role] || { background: "#f4f4f5", color: "#111", border: "1px solid #e6e6e9" };
+  const style =
+    {
+      Admin: {
+        background: "#111827",
+        color: "#fff",
+      },
+      User: {
+        background: "#eef2ff",
+        color: "#1e3a8a",
+        border: "1px solid #c7d2fe",
+      },
+     
+    }[role] ||
+    {
+      background: "#f4f4f5",
+      color: "#111827",
+      border: "1px solid #e6e6e9",
+    };
 
   return (
     <span

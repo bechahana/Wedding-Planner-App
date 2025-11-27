@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import "./admin.css";
+import { createService } from "../api/client"; // adjust path if needed
 
 const SERVICE_TYPES = ["DJ", "Chef", "Cake Baker", "Florist", "Waiter", "Venue"];
 
@@ -51,14 +52,70 @@ export default function AddService() {
     setPreviews(updated.map((f) => URL.createObjectURL(f)));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setAlert(null);
+  
+    // Basic validation
+    if (!name || !email || !price) {
+      setAlert({
+        type: "danger",
+        msg: "Please fill in at least Name, Email and Price.",
+      });
+      return;
+    }
+  
     setSaving(true);
-    setTimeout(() => {
+  
+    try {
+      const payload = {
+        service_type: type,
+        name,
+        address,
+        price,
+        description: bio,
+        phone_number: phone,
+        email,
+        capacity: isVenue ? capacity : undefined,
+        dates,
+        photos: files,
+      };
+  
+      const res = await createService(payload);
+  
+      if (res.ok) {
+        setAlert({ type: "ok", msg: "Service added successfully!" });
+  
+        // Optional: reset form
+        setName("");
+        setAddress("");
+        setBio("");
+        setPhone("");
+        setEmail("");
+        setPrice("");
+        setCapacity("");
+        setDates([]);
+        setFiles([]);
+        previews.forEach((url) => URL.revokeObjectURL(url));
+        setPreviews([]);
+        setType("DJ");
+      } else {
+        setAlert({
+          type: "danger",
+          msg: res.error || "Failed to save service.",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      setAlert({
+        type: "danger",
+        msg: "An unexpected error occurred while saving the service.",
+      });
+    } finally {
       setSaving(false);
-      setAlert({ type: "ok", msg: "Service added successfully!" });
-    }, 1000);
+    }
   };
+  
 
   return (
     <div className="panel">

@@ -4,7 +4,7 @@ import "./admin.css";
 import AddService from "./AddService";
 import Accounts from "./Accounts";
 import Feedback from "./Feedback";
-
+import ListServices from "./ListServices";
 export default function AdminDashboard() {
   const [tab, setTab] = useState("add-service");
   const navigate = useNavigate(); // 🚀
@@ -43,6 +43,8 @@ export default function AdminDashboard() {
         <aside className="sidebar">
           <div className="section-title">Admin Panel</div>
           <NavItem id="add-service" label="Add Service" />
+          <NavItem id="list-services" label="List Services" />
+
           <NavItem id="accounts" label="Accounts" />
           <NavItem id="feedback" label="Feedback" />
         </aside>
@@ -50,6 +52,8 @@ export default function AdminDashboard() {
         {/* Content */}
         <main className="content">
           {tab === "add-service" && <AddService />}
+          {tab === "list-services" && <ListServices />}
+
           {tab === "accounts" && <Accounts />}
           {tab === "feedback" && <Feedback />}
         </main>

@@ -51,6 +51,58 @@ export const loginAccount = (payload) =>
 export const registerAccount = (payload) =>
   api.post("/auth/register", payload).then((res) => res.data);
 
+/* -----------------------------
+   ADMIN: CREATE SERVICE
+------------------------------ */
+export const createService = async (payload) => {
+  const formData = new FormData();
+
+  // Basic fields
+  formData.append("service_type", payload.service_type);
+  formData.append("name", payload.name || "");
+  formData.append("address", payload.address || "");
+  formData.append("price", payload.price || "");
+  formData.append("description", payload.description || "");
+  formData.append("phone_number", payload.phone_number || "");
+  formData.append("email", payload.email || "");
+
+  if (payload.capacity !== undefined) {
+    formData.append("capacity", payload.capacity || "");
+  }
+
+  // Dates as JSON string
+  if (Array.isArray(payload.dates)) {
+    formData.append("dates", JSON.stringify(payload.dates));
+  }
+
+  // Photos
+  if (Array.isArray(payload.photos)) {
+    payload.photos.forEach((file) => {
+      formData.append("photos", file);
+    });
+  }
+
+  const { data } = await api.post("/services", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return data; // { ok, serviceId }
+};
+/* -----------------------------
+   ADMIN: LIST SERVICES
+------------------------------ */
+export const listServices = async (options = {}) => {
+  // options can contain { service_type }
+  const params = {};
+
+  if (options.service_type && options.service_type !== "All") {
+    params.service_type = options.service_type;
+  }
+
+  const { data } = await api.get("/services", { params });
+  // data is { ok, services }
+  return data.services || [];
+};
 
 
 
