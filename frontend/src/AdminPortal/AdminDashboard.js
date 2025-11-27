@@ -1,29 +1,41 @@
 import React, { useState } from "react";
-import "./admin.css";                 // ✅ correct CSS import (no variable)
+import { useNavigate } from "react-router-dom";
+import "./admin.css";
 import AddService from "./AddService";
 import Accounts from "./Accounts";
 import Feedback from "./Feedback";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState("add-service");
+  const navigate = useNavigate(); // 🚀
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+
+    navigate("/login", { replace: true });
+
+    // 🛑 Prevent back button from returning to admin pages
+    window.history.pushState(null, "", "/login");
+  };
 
   const NavItem = ({ id, label }) => (
     <button
       onClick={() => setTab(id)}
-      className={`nav-item ${tab === id ? "active" : ""}`}   // ✅ scoped styling
+      className={`nav-item ${tab === id ? "active" : ""}`}
     >
       {label}
     </button>
   );
 
   return (
-    <div className="admin">                                {/* ✅ scope root */}
+    <div className="admin">
       {/* Topbar */}
       <div className="topbar">
         <div className="brand">Wedding Planner — Admin</div>
-        <button className="logout-btn" onClick={() => console.log("Logout clicked")}>
-  Logout
-</button>
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
 
       <div className="layout">

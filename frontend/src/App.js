@@ -9,7 +9,7 @@ import {
 
 import "./App.css";
 import "./User/user-pages.css";
-
+import UserDashboard from "./User/UserDashboard";
 // Pages
 import Login from "./Authentication/Login";
 import SignUp from "./Authentication/SignUp";
@@ -19,7 +19,7 @@ import Home from "./Guest/Home";
 import AddPhotos from "./Guest/AddPhotos";
 import ParkingCapacity from "./Guest/ParkingCapacity";
 
-// ⭐ auth API helpers
+// Auth API helpers
 import { loginAccount, registerAccount } from "./api/client";
 
 function App() {
@@ -32,11 +32,14 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
 
-        {/* after login */}
-        <Route path="/admin" element={<AdminDashboard />} />
+        {/* role-based routes */}
+        {/* /admin/:id -> Admin dashboard */}
+        <Route path="/admin/:id" element={<AdminDashboard />} />
+        {/* /user/:id -> normal user home (for now using Guest Home) */}
+        <Route path="/user/:id" element={<UserDashboard />} />
+        {/* if you ever add guests: <Route path="/guest/:id" ... /> */}
 
-        {/* invitation routes */}
-        <Route path="/home" element={<Home />} />
+        {/* invitation routes keep working */}
         <Route path="/invite/:invitationId/photos" element={<AddPhotos />} />
         <Route
           path="/invite/:invitationId/parking"
@@ -60,15 +63,12 @@ function LoginPage() {
         password: form.password,
       });
 
-      // store auth info
       localStorage.setItem("authToken", token);
       localStorage.setItem("currentUser", JSON.stringify(user));
 
-      if (user.role === "ADMIN") {
-        navigate("/admin");
-      } else {
-        navigate("/home");
-      }
+      // ⭐ role-based URL: /role/id
+      const pathRole = (user.role || "").toLowerCase(); // 'ADMIN' -> 'admin'
+      navigate(`/${pathRole}/${user.id}`);
     } catch (err) {
       console.error("Login failed:", err);
       alert("Login failed. Please check your email and password.");
@@ -100,7 +100,9 @@ function SignUpPage() {
       localStorage.setItem("authToken", token);
       localStorage.setItem("currentUser", JSON.stringify(user));
 
-      navigate("/home");
+      // new users always have role = 'USER' from backend
+      const pathRole = (user.role || "").toLowerCase(); // should be 'user'
+      navigate(`/${pathRole}/${user.id}`);
     } catch (err) {
       console.error("Sign up failed:", err);
       alert("Sign up failed. Try a different email.");

@@ -6,49 +6,51 @@ const pool = require("../config/database");
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_change_me";
 const JWT_EXPIRES_IN = "7d";
 
-// POST /api/auth/register  (only USER accounts, no admins)
+// POST /api/auth/register  (only USER accounts)
 exports.register = async (req, res) => {
-  const { full_name, email, password } = req.body;
-
-  if (!full_name || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: "full_name, email, password required" });
-  }
-
-  try {
-    // check if email already exists
-    const [existing] = await pool.query(
-      "SELECT id FROM accounts WHERE email = ?",
-      [email]
-    );
-    if (existing.length > 0) {
-      return res.status(409).json({ message: "Email already in use" });
+    const { full_name, email, password } = req.body;
+  
+    if (!full_name || !email || !password) {
+      return res
+        .status(400)
+        .json({ message: "full_name, email, password required" });
     }
-
-    const password_hash = await bcrypt.hash(password, 10);
-    const role = "USER"; // force no extra admins
-
-    const [result] = await pool.query(
-      "INSERT INTO accounts (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)",
-      [full_name, email, password_hash, role]
-    );
-
-    const user = {
-      id: result.insertId,
-      full_name,
-      email,
-      role,
-    };
-
-    const token = jwt.sign(user, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-
-    res.status(201).json({ user, token });
-  } catch (err) {
-    console.error("Register error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+  
+    try {
+      const [existing] = await pool.query(
+        "SELECT id FROM accounts WHERE email = ?",
+        [email]
+      );
+      if (existing.length > 0) {
+        return res.status(409).json({ message: "Email already in use" });
+      }
+  
+      const password_hash = await bcrypt.hash(password, 10);
+  
+      // ⭐ everyone who signs up gets USER role
+      const role = "USER";
+  
+      const [result] = await pool.query(
+        "INSERT INTO accounts (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)",
+        [full_name, email, password_hash, role]
+      );
+  
+      const user = {
+        id: result.insertId,
+        full_name,
+        email,
+        role,
+      };
+  
+      const token = jwt.sign(user, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  
+      res.status(201).json({ user, token });
+    } catch (err) {
+      console.error("Register error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  };
+  
 
 // POST /api/auth/login
 exports.login = async (req, res) => {
