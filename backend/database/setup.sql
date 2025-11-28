@@ -1,5 +1,71 @@
 CREATE DATABASE IF NOT EXISTS wedding_planner;
 USE wedding_planner;
+-- MAIN SERVICES TABLE
+CREATE TABLE IF NOT EXISTS wedding_services (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_type VARCHAR(20) NOT NULL,   -- DJ, Chef, Cake Baker, Florist, Waiter, Venue
+    name         VARCHAR(100) NOT NULL,
+    address      VARCHAR(255),
+    price        DECIMAL(10,2) NOT NULL,
+    description  TEXT,
+    phone_number VARCHAR(30),
+    email        VARCHAR(255)
+);
+
+-- SERVICE PHOTOS (many per service)
+CREATE TABLE IF NOT EXISTS service_photos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_id INT NOT NULL,
+    file_url   VARCHAR(255) NOT NULL,
+    caption    VARCHAR(255),
+    uploaded_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (service_id) REFERENCES wedding_services(id) ON DELETE CASCADE
+);
+
+-- DJ BANDS (1–1 with wedding_services)
+CREATE TABLE IF NOT EXISTS dj_bands (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (service_id) REFERENCES wedding_services(id) ON DELETE CASCADE
+);
+
+-- CAKE BAKERS (1–1)
+CREATE TABLE IF NOT EXISTS cake_bakers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (service_id) REFERENCES wedding_services(id) ON DELETE CASCADE
+);
+
+-- CHEFS (1–1)
+CREATE TABLE IF NOT EXISTS chefs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (service_id) REFERENCES wedding_services(id) ON DELETE CASCADE
+);
+
+-- FLORISTS (1–1)
+CREATE TABLE IF NOT EXISTS florists (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (service_id) REFERENCES wedding_services(id) ON DELETE CASCADE
+);
+
+-- WAITERS (1–1)
+CREATE TABLE IF NOT EXISTS waiters (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (service_id) REFERENCES wedding_services(id) ON DELETE CASCADE
+);
+
+-- VENUES (1–1, with extra fields)
+CREATE TABLE IF NOT EXISTS venues (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_id INT NOT NULL UNIQUE,
+    address VARCHAR(255),
+    capacity INT,
+    parking_capacity INT,
+    FOREIGN KEY (service_id) REFERENCES wedding_services(id) ON DELETE CASCADE
+);
 
 -- ACCOUNTS (for authentication)
 CREATE TABLE IF NOT EXISTS accounts (

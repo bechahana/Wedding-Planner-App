@@ -11,7 +11,6 @@ export default function ListServices() {
   const [typeFilter, setTypeFilter] = useState("All");
   const [search, setSearch] = useState("");
 
-  // 🔄 Fetch services on mount and when typeFilter changes
   useEffect(() => {
     let mounted = true;
 
@@ -27,47 +26,49 @@ export default function ListServices() {
         if (!mounted) return;
         setServices(Array.isArray(data) ? data : []);
       } catch (e) {
-        console.error(e);
+        console.error("ListServices error:", e);
         if (!mounted) return;
         setErr("Failed to load services. Please try again.");
+        setServices([]);
       } finally {
         if (mounted) setLoading(false);
       }
     }
 
     fetchData();
-
     return () => {
       mounted = false;
     };
   }, [typeFilter]);
 
-  // 🔍 Filter + sort (by type then name)
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
+    const list = Array.isArray(services) ? services : [];
 
-    const base = services.filter((s) => {
-      const matchesText =
-        !term ||
-        s.name?.toLowerCase().includes(term) ||
-        s.address?.toLowerCase().includes(term) ||
-        s.description?.toLowerCase().includes(term) ||
-        s.email?.toLowerCase().includes(term);
+    return list
+      .filter((s) => {
+        const matchesText =
+          !term ||
+          s.name?.toLowerCase().includes(term) ||
+          s.address?.toLowerCase().includes(term) ||
+          s.description?.toLowerCase().includes(term) ||
+          s.email?.toLowerCase().includes(term);
 
-      return matchesText;
-    });
-
-    // Sort: service_type ASC, name ASC
-    return base.slice().sort((a, b) => {
-      const t1 = a.service_type || "";
-      const t2 = b.service_type || "";
-      if (t1 < t2) return -1;
-      if (t1 > t2) return 1;
-      const n1 = a.name || "";
-      const n2 = b.name || "";
-      return n1.localeCompare(n2);
-    });
+        return matchesText;
+      })
+      .sort((a, b) => {
+        const t1 = a.service_type || "";
+        const t2 = b.service_type || "";
+        if (t1 < t2) return -1;
+        if (t1 > t2) return 1;
+        const n1 = a.name || "";
+        const n2 = b.name || "";
+        return n1.localeCompare(n2);
+      });
   }, [services, search]);
+
+  const formatPrice = (p) =>
+    p == null ? "—" : `${Number(p).toFixed(2)} €`;
 
   return (
     <div className="panel">
@@ -76,7 +77,6 @@ export default function ListServices() {
         View and manage all services stored in the database, sorted by type.
       </p>
 
-      {/* Toolbar */}
       <div className="toolbar">
         <label style={{ fontSize: 14 }}>
           Service Type:&nbsp;
@@ -113,13 +113,12 @@ export default function ListServices() {
         </div>
       )}
 
-      {/* Table */}
       <div style={{ overflowX: "auto" }}>
         <table>
           <thead>
             <tr>
-              <th style={{ width: "15%" }}>Type</th>
-              <th style={{ width: "20%" }}>Name</th>
+              <th style={{ width: "10%" }}>Type</th>
+              <th style={{ width: "25%" }}>Name</th>
               <th style={{ width: "20%" }}>Address</th>
               <th style={{ width: "10%" }}>Price</th>
               <th style={{ width: "20%" }}>Contact</th>
@@ -150,9 +149,9 @@ export default function ListServices() {
             ) : (
               filtered.map((s) => (
                 <tr key={s.id}>
-                  <td>{s.service_type || "—"}</td>
+                  <td>{s.service_type}</td>
                   <td>
-                    <div style={{ fontWeight: 600 }}>{s.name || "—"}</div>
+                    <div style={{ fontWeight: 600 }}>{s.name}</div>
                     {s.description && (
                       <div
                         style={{
@@ -170,15 +169,9 @@ export default function ListServices() {
                     )}
                   </td>
                   <td>{s.address || "—"}</td>
+                  <td>{formatPrice(s.price)}</td>
                   <td>
-                    {s.price != null && s.price !== ""
-                      ? `${s.price} €`
-                      : "—"}
-                  </td>
-                  <td>
-                    {s.email && (
-                      <div style={{ fontSize: 13 }}>{s.email}</div>
-                    )}
+                    {s.email && <div style={{ fontSize: 13 }}>{s.email}</div>}
                     {s.phone_number && (
                       <div style={{ fontSize: 13, color: "#6b7280" }}>
                         {s.phone_number}

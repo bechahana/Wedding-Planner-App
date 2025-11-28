@@ -2,41 +2,58 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const pool = require("../config/database");
 
 const router = express.Router();
 
-/* ---------- Multer config for service photos ---------- */
+/* ---------------------- Ensure upload dir exists ---------------------- */
+
+const uploadDir = path.join(__dirname, "..", "uploads", "services");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+/* --------------------------- Multer storage --------------------------- */
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "..", "uploads", "services"));
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, unique + ext);
+    cb(null, unique + path.extname(file.originalname));
   },
 });
 
 const upload = multer({
   storage,
-  limits: { files: 10 },
+  limits: { fileSize: 10 * 1024 * 1024, files: 10 }, // 10 MB, max 10 files
 });
 
-/* ---------- POST /api/services ---------- */
-/*
-  Expects multipart/form-data with fields:
-  - service_type   (DJ, Chef, Cake Baker, Florist, Waiter, Venue)
-  - name
-  - address
-  - price
-  - description
-  - phone_number
-  - email
-  - capacity       (only for Venue)
-  - dates          (JSON string array, e.g. '["2025-06-10","2025-06-11"]')
-  - photos[]       (files)
-*/
+/* ------------------------ Helper: subtype table ------------------------ */
+
+function getSubtypeTable(serviceType) {
+  switch (serviceType) {
+    case "DJ":
+      return "dj_bands";
+    case "Chef":
+      return "chefs";
+    case "Cake Baker":
+      return "cake_bakers";
+    case "Florist":
+      return "florists";
+    case "Waiter":
+      return "waiters";
+    case "Venue":
+      return "venues";
+    default:
+      return null;
+  }
+}
+
+/* ---------------------------- POST /services --------------------------- */
+// creates service + photos + subtype row, following the ERD strictly
 router.post("/", upload.array("photos", 10), async (req, res) => {
   const {
     service_type,
@@ -47,138 +64,137 @@ router.post("/", upload.array("photos", 10), async (req, res) => {
     phone_number,
     email,
     capacity,
-    dates, // optional (JSON string)
+    dates,
   } = req.body;
 
-  if (!service_type || !name || !email) {
-    return res.status(400).json({
-      ok: false,
-      error: "service_type, name and email are required.",
-    });
+  if (!service_type || !name || !price || !email) {
+    return res
+      .status(400)
+      .json({ ok: false, error: "Missing required fields." });
   }
 
-  const files = req.files || [];
-
-  let parsedDates = [];
-  if (dates) {
-    try {
-      parsedDates = JSON.parse(dates);
-    } catch {
-      // if parsing fails we just ignore dates for now
-    }
-  }
-
-  const conn = await pool.getConnection();
+  let conn;
   try {
+    conn = await pool.getConnection();
     await conn.beginTransaction();
 
-    // 1) Insert into wedding_services
-    const [result] = await conn.execute(
+    const numericPrice = Number(price);
+
+    // 1️⃣ wedding_services
+    const [serviceResult] = await conn.query(
       `INSERT INTO wedding_services
-        (service_type, name, address, price, description, phone_number, email)
+       (service_type, name, address, price, description, phone_number, email)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         service_type,
         name,
         address || null,
-        price || null,
+        isNaN(numericPrice) ? null : numericPrice,
         description || null,
         phone_number || null,
         email,
       ]
     );
 
-    const serviceId = result.insertId;
+    const serviceId = serviceResult.insertId;
 
-    // 2) If it's a Venue, also create a row in venues
-    if (service_type === "Venue") {
-      await conn.execute(
-        `INSERT INTO venues (service_id, address, capacity, parking_capacity)
-         VALUES (?, ?, ?, ?)`,
-        [serviceId, address || null, capacity || null, null]
+    // 2️⃣ service_photos
+    if (Array.isArray(req.files) && req.files.length > 0) {
+      const photoInserts = req.files.map((file) => {
+        const fileUrl = `/uploads/services/${file.filename}`;
+        return conn.query(
+          "INSERT INTO service_photos (service_id, file_url) VALUES (?, ?)",
+          [serviceId, fileUrl]
+        );
+      });
+      await Promise.all(photoInserts);
+    }
+
+    // 3️⃣ subtype table
+    const subtypeTable = getSubtypeTable(service_type);
+    if (!subtypeTable) {
+      throw new Error("Unsupported service type: " + service_type);
+    }
+
+    if (subtypeTable === "venues") {
+      const cap = capacity ? Number(capacity) : null;
+      await conn.query(
+        "INSERT INTO venues (service_id, address, capacity) VALUES (?, ?, ?)",
+        [serviceId, address || null, isNaN(cap) ? null : cap]
+      );
+    } else {
+      await conn.query(
+        `INSERT INTO ${subtypeTable} (service_id) VALUES (?)`,
+        [serviceId]
       );
     }
 
-    // 3) Save photos into service_photos
-    for (const file of files) {
-      const fileUrl = `/uploads/services/${file.filename}`;
-      await conn.execute(
-        `INSERT INTO service_photos (service_id, file_url, caption, uploaded_at)
-         VALUES (?, ?, ?, NOW())`,
-        [serviceId, fileUrl, null]
-      );
-    }
-
-    // NOTE: your current ERD has no table for availability.
-    // We just parse dates (above) and ignore them for now.
-    // Later we could add a service_availability table if needed.
-// ✅ List services (optionally filter by service_type)
-router.get("/", async (req, res) => {
-    const { service_type } = req.query;
-  
-    let conn;
-    try {
-      conn = await pool.getConnection();
-  
-      let sql = `
-        SELECT 
-          s.id,
-          s.service_type,
-          s.name,
-          s.address,
-          s.price,
-          s.description,
-          s.phone_number,
-          s.email,
-          s.capacity,
-          s.created_at,
-          GROUP_CONCAT(p.file_url ORDER BY p.id SEPARATOR ',') AS photo_urls
-        FROM wedding_services s
-        LEFT JOIN service_photos p ON p.service_id = s.id
-      `;
-      const params = [];
-  
-      if (service_type) {
-        sql += ` WHERE s.service_type = ?`;
-        params.push(service_type);
-      }
-  
-      sql += ` GROUP BY s.id ORDER BY s.service_type ASC, s.name ASC`;
-  
-      const [rows] = await conn.query(sql, params);
-  
-      const services = rows.map((row) => ({
-        id: row.id,
-        service_type: row.service_type,
-        name: row.name,
-        address: row.address,
-        price: row.price,
-        description: row.description,
-        phone_number: row.phone_number,
-        email: row.email,
-        capacity: row.capacity,
-        created_at: row.created_at,
-        photos: row.photo_urls ? row.photo_urls.split(",") : [],
-      }));
-  
-      res.json({ ok: true, services });
-    } catch (err) {
-      console.error("Error fetching services:", err);
-      res.status(500).json({ ok: false, error: "Failed to fetch services" });
-    } finally {
-      if (conn) conn.release();
-    }
-  });
-  
     await conn.commit();
-    res.json({ ok: true, serviceId });
+    res.json({ ok: true, id: serviceId });
   } catch (err) {
-    console.error("Error creating service:", err);
-    await conn.rollback();
-    res.status(500).json({ ok: false, error: "Failed to create service" });
+    console.error("Error adding service:", err);
+    if (conn) await conn.rollback();
+    return res.status(500).json({ ok: false, error: "Failed to add service" });
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 });
+
+/* ----------------------------- GET /services --------------------------- */
+// list services, optionally filtered by ?service_type=DJ etc.
+router.get("/", async (req, res) => {
+  const { service_type } = req.query;
+
+  let conn;
+  try {
+    conn = await pool.getConnection();
+
+    let sql = `
+      SELECT 
+        s.id,
+        s.service_type,
+        s.name,
+        s.address,
+        s.price,
+        s.description,
+        s.phone_number,
+        s.email,
+        GROUP_CONCAT(p.file_url ORDER BY p.id SEPARATOR ',') AS photo_urls
+      FROM wedding_services s
+      LEFT JOIN service_photos p ON p.service_id = s.id
+    `;
+    const params = [];
+
+    if (service_type) {
+      sql += " WHERE s.service_type = ?";
+      params.push(service_type);
+    }
+
+    sql += " GROUP BY s.id ORDER BY s.service_type ASC, s.name ASC";
+
+    const [rows] = await conn.query(sql, params);
+
+    const services = rows.map((row) => ({
+      id: row.id,
+      service_type: row.service_type,
+      name: row.name,
+      address: row.address,
+      price: row.price,
+      description: row.description,
+      phone_number: row.phone_number,
+      email: row.email,
+      photos: row.photo_urls ? row.photo_urls.split(",") : [],
+    }));
+
+    res.json({ ok: true, services });
+  } catch (err) {
+    console.error("Error fetching services:", err);
+    res.status(500).json({ ok: false, error: "Failed to fetch services" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
+/* ------------------------------- EXPORT -------------------------------- */
 
 module.exports = router;

@@ -55,8 +55,7 @@ export default function AddService() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAlert(null);
-  
-    // Basic validation
+
     if (!name || !email || !price) {
       setAlert({
         type: "danger",
@@ -64,9 +63,9 @@ export default function AddService() {
       });
       return;
     }
-  
+
     setSaving(true);
-  
+
     try {
       const payload = {
         service_type: type,
@@ -80,13 +79,13 @@ export default function AddService() {
         dates,
         photos: files,
       };
-  
+
       const res = await createService(payload);
-  
+
       if (res.ok) {
         setAlert({ type: "ok", msg: "Service added successfully!" });
-  
-        // Optional: reset form
+
+        // Reset Form
         setName("");
         setAddress("");
         setBio("");
@@ -109,17 +108,17 @@ export default function AddService() {
       console.error(err);
       setAlert({
         type: "danger",
-        msg: "An unexpected error occurred while saving the service.",
+        msg: "Unexpected error while saving service.",
       });
     } finally {
       setSaving(false);
     }
   };
-  
 
   return (
     <div className="panel">
       <h2>Add Service</h2>
+
       {alert && (
         <div className={`alert ${alert.type}`} style={{ marginBottom: 15 }}>
           {alert.msg}
@@ -127,168 +126,106 @@ export default function AddService() {
       )}
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-        {/* Service Type */}
+        
+        {/* SERVICE TYPE */}
         <div className="field">
           <label className="label">Service Type</label>
           <select value={type} onChange={(e) => setType(e.target.value)}>
             {SERVICE_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
+              <option key={t} value={t}>{t}</option>
             ))}
           </select>
         </div>
 
-        {/* Name */}
+        {/* NAME */}
         <div className="field">
           <label className="label">Service Name</label>
-          <input
-            type="text"
-            placeholder="Enter the name of the service"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter name" />
         </div>
 
-        {/* Address */}
+        {/* ADDRESS */}
         <div className="field">
           <label className="label">Address</label>
-          <input
-            type="text"
-            placeholder="Enter the address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
+          <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Enter address" />
         </div>
 
-        {/* Price */}
+        {/* PRICE */}
         <div className="field">
           <label className="label">Price (€)</label>
-          <input
-            type="number"
-            placeholder="Enter service price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Enter price" />
         </div>
 
-        {/* Capacity (for Venues only) */}
+        {/* CAPACITY FOR VENUE ONLY */}
         {isVenue && (
           <div className="field">
             <label className="label">Capacity</label>
-            <input
-              type="number"
-              placeholder="Enter venue capacity"
-              value={capacity}
-              onChange={(e) => setCapacity(e.target.value)}
-            />
+            <input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} placeholder="Enter capacity" />
           </div>
         )}
 
-        {/* Description */}
+        {/* DESCRIPTION */}
         <div className="field">
           <label className="label">Description</label>
-          <textarea
-            placeholder="Describe the service"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-          />
+          <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Describe the service" />
         </div>
 
-        {/* Phone */}
+        {/* PHONE */}
         <div className="field">
           <label className="label">Phone Number</label>
-          <input
-            type="tel"
-            placeholder="+49 123 456 789"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+          <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+49 123 456 789" />
         </div>
 
-        {/* Email */}
+        {/* EMAIL */}
         <div className="field">
           <label className="label">Email</label>
-          <input
-            type="email"
-            placeholder="example@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="example@email.com" />
         </div>
 
-        {/* Availability Dates */}
+        {/* DATES */}
         <div className="field">
           <label className="label">Available Dates</label>
           <div style={{ display: "flex", gap: "8px" }}>
-            <input
-              type="date"
-              value={newDate}
-              onChange={(e) => setNewDate(e.target.value)}
-            />
-            <button type="button" className="btn btn-accent" onClick={addDate}>
-              Add Date
-            </button>
+            <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
+            <button type="button" className="btn btn-accent" onClick={addDate}>Add Date</button>
           </div>
 
-          {dates.length > 0 ? (
+          {dates.length > 0 && (
             <div className="date-grid" style={{ marginTop: 12 }}>
               {dates.map((d) => (
                 <div key={d} className="date-pill">
                   {d}
-                  <button
-                    type="button"
-                    className="icon-btn"
-                    style={{ marginLeft: 8 }}
-                    onClick={() => removeDate(d)}
-                  >
-                    ✕
-                  </button>
+                  <button type="button" className="icon-btn" onClick={() => removeDate(d)}>✕</button>
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="empty">No dates added yet.</div>
           )}
         </div>
 
-        {/* Photo Upload */}
+        {/* PHOTOS */}
         <div className="field">
           <label className="label">Upload Photos</label>
           <label className="uploader" htmlFor="photos">
-            <input
-              type="file"
-              id="photos"
-              ref={fileInputRef}
-              accept="image/*"
-              multiple
-              onChange={handleFileChange}
-            />
-            <div>Click or drag files here (max 10)</div>
+            <input id="photos" type="file" accept="image/*" multiple ref={fileInputRef} onChange={handleFileChange} />
+            <div>Click or drag files here</div>
           </label>
 
           {previews.length > 0 && (
             <div className="preview-grid" style={{ marginTop: 10 }}>
               {previews.map((src, i) => (
-                <div className="thumb" key={i}>
+                <div key={i} className="thumb">
                   <img src={src} alt={`Preview ${i + 1}`} />
-                  <button
-                    type="button"
-                    className="remove"
-                    onClick={() => removePhoto(i)}
-                  >
-                    Remove
-                  </button>
+                  <button type="button" className="remove" onClick={() => removePhoto(i)}>Remove</button>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Submit */}
+        {/* SUBMIT */}
         <button className="btn btn-primary" disabled={saving}>
           {saving ? "Saving..." : "Save Service"}
         </button>
+
       </form>
     </div>
   );
