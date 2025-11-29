@@ -1,5 +1,7 @@
 import { useParams } from "react-router-dom";
 import PhotoUploader from "./PhotoUploader";
+import "./style.css";
+
 
 export default function AddPhotos() {
   const { invitationId } = useParams();

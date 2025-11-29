@@ -1,279 +1,226 @@
-/* -----------------------------
-   GLOBAL
------------------------------- */
-body {
-    margin: 0;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    background-color: #f7f7f7;
-    color: #444;
+/* -------------------------------------------------------
+   HOME PAGE WRAPPER
+------------------------------------------------------- */
+.home-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* Glassmorphism wedding card */
+.home-card {
+  background: #ffffffdd;
+  padding-top: 20px !important;
+  padding-bottom: 60px !important;
+  backdrop-filter: blur(12px);
+  padding: 90px 60px;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 780px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+
+/* Reuse same animation as Add Photos (if not already) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  /* Smooth all buttons + links */
-  a {
-    text-decoration: none;
-    color: inherit;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  /* -----------------------------
-     NAVBAR
-  ------------------------------ */
-  .nav {
-    background-color: #ffffff;
-    padding: 12px 0;
-    border-bottom: 1px solid #e5e5e5;
-  }
-  
-  .nav .container {
-    width: 90%;
-    margin: 0 auto;
-  }
-  
-  .brand {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #6d6d6d;
-  }
-  
-  /* -----------------------------
-     HOME WRAPPER
-  ------------------------------ */
-  .home-wrapper {
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-  }
-  
-  /* Elegant white card */
-  .home-card {
-    background-color: #ffffff;
-    padding: 40px 35px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 650px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    text-align: center;
-  }
-  
-  /* -----------------------------
-     TEXT STYLING
-  ------------------------------ */
-  .wedding-title {
-    margin-bottom: 10px;
-    font-size: 2rem;
-    font-weight: 600;
-    color: #3a3a3a;
-  }
-  
-  .wedding-message {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #666666;
-    margin-bottom: 30px;
-  }
-  
-  /* -----------------------------
-     BUTTONS
-  ------------------------------ */
-  
+}
+
+/* Small pill above the title */
+.home-pill {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #fff0fa;
+  color: #b33c86;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 14px;
+  margin-top: -35px !important;
+}
+
+/* Title with subtle gradient text */
+.wedding-title {
+  margin: 0 0 6px 0;
+  font-size: 2.3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #b33c86, #6a4bac);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Small subtitle under the main title */
+.wedding-subtitle {
+  margin: 0 0 18px 0;
+  font-size: 1.1rem;
+  color: #7a6b95;
+}
+
+/* Body text */
+.wedding-message {
+  font-size: 1rem;
+  margin-top: 50px !important;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 15px !important; 
+}
+
+/* -------------------------------------------------------
+   HOME BUTTONS LAYOUT
+------------------------------------------------------- */
+
+.home-buttons {
+  margin-top: 35px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+/* On bigger screens, place buttons side by side */
+@media (min-width: 720px) {
   .home-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: row;
   }
-  
-  /* Large elegant buttons */
-  .btn-large {
-    padding: 14px 18px;
-    font-size: 1.1rem;
-    border-radius: 8px;
-    font-weight: 500;
-    display: block;
-    text-align: center;
-    transition: all 0.2s ease;
-  }
-  
-  /* Not colorful — soft elegant tones */
-  .btn-violet {
-    background-color: #ece9f0;   /* soft grey-lavender */
-    border: 1px solid #dcd8e2;
-    color: #4d4d4d;
-  }
-  
-  .btn-violet:hover {
-    background-color: #e4e1ea;
-  }
-  
-  .btn-gold {
-    background-color: #f3f2ed;   /* soft ivory */
-    border: 1px solid #e4e2db;
-    color: #4d4d4d;
-  }
-  
-  .btn-gold:hover {
-    background-color: #eae9e3;
-  }
-  /* -------------------------------------------------------
-     GLOBAL PAGE STYLING (wedding theme)
-  ------------------------------------------------------- */
-  body {
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    background: linear-gradient(135deg, #fff5f8, #f8f4ff);
-    color: #444;
-  }
-  
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
-  
-  /* -------------------------------------------------------
-     NAVBAR
-  ------------------------------------------------------- */
-  .nav {
-    background: #ffffffcc;
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid #f0d9e9;
-    padding: 14px 0;
-  }
-  
-  .nav .container {
-    width: 90%;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-  }
-  
-  .brand {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #b33c86; /* soft romantic rose */
-  }
-  
-  /* -------------------------------------------------------
-     PAGE WRAPPER (Add Photos)
-  ------------------------------------------------------- */
-  .add-photos-wrapper {
-    display: flex;
-    justify-content: center;
-    padding: 50px 20px;
-  }
-  
-  /* Clean wedding card */
-  .add-photos-card {
-    background: #ffffffdd;
-    backdrop-filter: blur(10px);
-    padding: 40px 45px;
-    border-radius: 16px;
-    max-width: 750px;
-    width: 100%;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
-    animation: fadeIn 0.6s ease;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  /* -------------------------------------------------------
-     TITLES AND TEXT
-  ------------------------------------------------------- */
-  .add-title {
-    font-size: 2rem;
-    color: #b33c86; /* romantic pink */
-    margin-bottom: 5px;
-    font-weight: 700;
-  }
-  
-  .add-subtitle {
-    margin-top: 0;
-    font-size: 1.35rem;
-    color: #6a4bac; /* soft lavender */
-    font-weight: 600;
-  }
-  
-  .add-description {
-    color: #666;
-    margin-bottom: 35px;
-    font-size: 1rem;
-  }
-  
-  /* -------------------------------------------------------
-     FORM STYLING
-  ------------------------------------------------------- */
-  .add-form label {
-    display: block;
-    margin-bottom: 6px;
-    margin-top: 15px;
-    font-weight: 500;
-    color: #444;
-  }
-  
-  .add-form input[type="text"],
-  .add-form textarea,
-  .add-form input[type="file"] {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #e6c5e4;
-    border-radius: 8px;
-    background: #fdf7ff;
-    font-size: 0.95rem;
-    box-sizing: border-box;
-    transition: border 0.2s;
-  }
-  
-  .add-form input[type="text"]:focus,
-  .add-form textarea:focus {
-    border-color: #b33c86;
-    outline: none;
-  }
-  
-  .checkbox-line {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  
-  /* -------------------------------------------------------
-     UPLOAD BUTTON
-  ------------------------------------------------------- */
-  .btn-upload {
-    width: 100%;
-    margin-top: 25px;
-    padding: 14px;
-    background: linear-gradient(135deg, #b33c86, #6a4bac);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(179, 60, 134, 0.3);
-    transition: 0.25s ease;
-  }
-  
-  .btn-upload:hover {
-    background: linear-gradient(135deg, #d94fa6, #8562d1);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(179, 60, 134, 0.4);
-  }
-  
-  .btn-upload:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  
-  /* Small status bubbles */
-  .status-badge {
-    background: #fff0fa;
-    color: #b33c86;
-    padding: 8px 10px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
-    display: inline-block;
-  }
-  
-   
+}
+
+/* Large card-like buttons */
+.btn-large {
+  flex: 1;
+  padding: 16px 18px;
+  border-radius: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+/* Icon bubble */
+.btn-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 4px;
+}
+
+/* Text & caption */
+.btn-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.05rem;
+}
+
+.btn-caption {
+  font-size: 0.86rem;
+  color: #777;
+  margin-top: 2px;
+}
+
+/* Color variants */
+.btn-violet {
+  background-color: #f4eefe;
+  border-color: #e2d4fb;
+  color: #3d305f;
+}
+
+.btn-violet:hover {
+  background-color: #ece3fd;
+  box-shadow: 0 10px 24px rgba(106, 75, 172, 0.18);
+  transform: translateY(-2px);
+}
+
+.btn-gold {
+  background-color: #f9f5e8;
+  border-color: #efe2c3;
+  color: #4d3c29;
+}
+
+.btn-gold:hover {
+  background-color: #f3ebda;
+  box-shadow: 0 10px 24px rgba(189, 158, 96, 0.18);
+  transform: translateY(-2px);
+}
+
+/* Footer note under buttons */
+.home-footer-note {
+  margin-top: 90px !important;
+  font-size: 0.9rem;
+  color: #8b7f96;
+}
+
+/* Nice inner layout */
+.add-form-inner {
+  max-width: 520px;
+}
+
+/* Label above dropzone */
+.upload-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #5a4c73;
+}
+
+/* Pretty dropzone for file input */
+.upload-dropzone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px dashed #e6c5e4;
+  background: #fff7ff;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease,
+    border-color 0.2s ease, background 0.2s ease;
+}
+
+.upload-dropzone:hover {
+  border-color: #d59ed2;
+  background: #fff0fb;
+  box-shadow: 0 8px 18px rgba(179, 60, 134, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Hide the ugly native input but keep it clickable */
+.upload-dropzone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Icon + text */
+.upload-icon {
+  font-size: 1.8rem;
+}
+
+.upload-copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-title {
+  font-weight: 600;
+  color: #5b3b82;
+}
+
+.upload-subtitle {
+  font-size: 0.9rem;
+  color: #777;
+}
