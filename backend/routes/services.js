@@ -168,6 +168,10 @@ router.get("/", async (req, res) => {
     if (service_type) {
       sql += " WHERE s.service_type = ?";
       params.push(service_type);
+      // For Venue type, only return venues that exist in venues table
+      if (service_type === "Venue") {
+        sql += " AND s.id IN (SELECT service_id FROM venues)";
+      }
     }
 
     sql += " GROUP BY s.id ORDER BY s.service_type ASC, s.name ASC";

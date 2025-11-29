@@ -9,6 +9,8 @@ const photoRoutes = require("./routes/photos");
 const parkingRoutes = require("./routes/parking");
 const accountsRoutes = require("./routes/accounts"); 
 const authRoutes = require("./routes/auth");
+const appointmentsRoutes = require("./routes/appointments");
+const invitationsRoutes = require("./routes/invitations");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +34,8 @@ app.use("/api/guests/events", photoRoutes);
 app.use("/api/guests/events", parkingRoutes);
 app.use("/api/guests", parkingRoutes);
 app.use("/api/accounts", accountsRoutes); 
+app.use("/api/appointments", appointmentsRoutes);
+app.use("/api/invitations", invitationsRoutes);
 // Start server
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
