@@ -198,6 +198,64 @@ router.get("/", async (req, res) => {
     if (conn) conn.release();
   }
 });
+/* ----------------------------- GET /services --------------------------- */
+// list services, optionally filtered by ?service_type=DJ etc.
+router.get("/", async (req, res) => {
+  const { service_type } = req.query;   // DJ, Chef, Cake Baker, Florist, Waiter, Venue
+
+  let conn;
+  try {
+    conn = await pool.getConnection();
+
+    let sql = `
+      SELECT 
+        s.id,
+        s.service_type,
+        s.name,
+        s.address,
+        s.price,
+        s.description,
+        s.phone_number,
+        s.email,
+        GROUP_CONCAT(p.file_url ORDER BY p.id SEPARATOR ',') AS photo_urls
+      FROM wedding_services s
+      LEFT JOIN service_photos p ON p.service_id = s.id
+    `;
+    const params = [];
+
+    // Add WHERE if a category is requested
+    if (service_type) {
+      sql += ` WHERE s.service_type = ?`;
+      params.push(service_type);
+    }
+
+    sql += `
+      GROUP BY s.id
+      ORDER BY s.service_type, s.name
+    `;
+
+    const [rows] = await conn.query(sql, params);
+
+    const services = rows.map((row) => ({
+      id: row.id,
+      service_type: row.service_type,
+      name: row.name,
+      address: row.address,
+      price: row.price,
+      description: row.description,
+      phone_number: row.phone_number,
+      email: row.email,
+      photos: row.photo_urls ? row.photo_urls.split(",") : [],
+    }));
+
+    res.json({ ok: true, services });
+  } catch (err) {
+    console.error("Error fetching services:", err);
+    res.status(500).json({ ok: false, error: "Failed to fetch services" });
+  } finally {
+    if (conn) conn.release();
+  }
+});
 
 /* ------------------------------- EXPORT -------------------------------- */
 

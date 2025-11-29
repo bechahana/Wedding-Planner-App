@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./admin.css";
 import { listServices } from "../api/client";
+import { SERVICE_TYPES_WITH_ALL } from "../constants/serviceTypes";
 
-const SERVICE_TYPES = ["All", "DJ", "Chef", "Cake Baker", "Florist", "Waiter", "Venue"];
+const SERVICE_TYPES = SERVICE_TYPES_WITH_ALL;
 
 export default function ListServices() {
   const [services, setServices] = useState([]);

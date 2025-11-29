@@ -14,6 +14,7 @@ import UserDashboard from "./User/UserDashboard";
 import Login from "./Authentication/Login";
 import SignUp from "./Authentication/SignUp";
 import AdminDashboard from "./AdminPortal/AdminDashboard";
+import BrowseServices from "./User/ManageServices/BrowseServices";
 
 import Home from "./Guest/Home";
 import AddPhotos from "./Guest/AddPhotos";
@@ -40,6 +41,7 @@ function App() {
         <Route path="/user/:id" element={<UserDashboard />} />
         {/* if you ever add guests: <Route path="/guest/:id" ... /> */}
         <Route path="/home" element={<Home />} />
+        <Route path="/user/services" element={<BrowseServices />} />
 
         {/* invitation routes keep working */}
         <Route path="/invite/:invitationId/photos" element={<AddPhotos />} />

@@ -92,17 +92,18 @@ export const createService = async (serviceData) => {
 };
 
 /* -----------------------------
-   ADMIN: LIST SERVICES
+   LIST SERVICES (admin + user)
 ------------------------------ */
 export const listServices = async (options = {}) => {
   const params = {};
 
+  // options.service_type should be exactly one of:
+  // "DJ", "Chef", "Cake Baker", "Florist", "Waiter", "Venue"
   if (options.service_type && options.service_type !== "All") {
     params.service_type = options.service_type;
   }
 
   const { data } = await api.get("/services", { params });
-  // Backend returns { ok: true, services: [...] }
   return Array.isArray(data.services) ? data.services : [];
 };
 
@@ -124,6 +125,9 @@ export const listUserAppointments = async (user_id) => {
   const { data } = await api.get("/appointments/my", { params: { user_id } });
   return Array.isArray(data.appointments) ? data.appointments : [];
 };
+// If you want a “user-named” alias:
+export const listServicesForUser = listServices;
+
 
 // INVITATIONS API
 export const sendInvitations = async (venue_id, invitations, message, sender_id) => {
