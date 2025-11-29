@@ -128,6 +128,8 @@
 
 .admin .content {
   padding: 20px 18px 24px;
+  max-width: 1600px;   /* wider canvas for panels */
+  margin: 0 auto;
 }
 
 /* ---------- PANELS / CARDS ---------- */
@@ -137,6 +139,16 @@
   border-radius: var(--radius);
   padding: 18px 18px 20px;
   box-shadow: var(--shadow-md);
+  max-width: 1100px;   /* ⬅️ make card wider */
+  margin: 0 auto;      /* center it */
+}
+
+.admin .panel form {
+  max-width: 100%;     /* ⬅️ form now uses full card width */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .admin .panel + .panel {
@@ -156,6 +168,13 @@
 }
 
 /* ---------- FORMS (Add Service, etc.) ---------- */
+.admin .panel form {
+  max-width: 1100px;   /* wider form */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 .admin input[type="text"],
 .admin input[type="email"],
 .admin input[type="number"],
@@ -164,18 +183,21 @@
 .admin textarea,
 .admin select {
   width: 100%;
-  padding: 0.7rem 0.85rem;
-  font-size: 0.95rem;
+  padding: 10px 12px;
+  font-size: 0.92rem;
   background: #fff7ff;
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  height: 42px;           /* ➜ consistent, compact height */
+  box-sizing: border-box;
 }
 
 .admin textarea {
-  min-height: 96px;
+  height: auto;
+  min-height: 100px;       /* only description is taller */
   resize: vertical;
 }
 
@@ -191,7 +213,7 @@
 .admin .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 @media (max-width: 800px) {
   .admin .form-grid {
@@ -206,8 +228,9 @@
   align-items: center;
 }
 .admin .row > * {
-  flex: 1;
+  flex: 1;            /* ➜ equal width children */
 }
+
 
 /* labels & hints */
 .admin .field {
@@ -215,10 +238,15 @@
   flex-direction: column;
   gap: 6px;
 }
+
 .admin .label {
   font-size: 0.9rem;
   font-weight: 600;
+  color: var(--primary);   /* uses your main pink #b33c86 */
 }
+
+
+
 .admin .hint {
   font-size: 0.8rem;
   color: var(--muted);
@@ -258,6 +286,12 @@
   box-shadow: 0 4px 10px rgba(179, 60, 134, 0.3);
 }
 
+/* submit buttons in forms: not crazy wide */
+.admin .panel form .btn-primary {
+  align-self: flex-end;
+  min-width: 180px;
+}
+
 .admin .btn-primary:hover {
   filter: brightness(1.03);
 }
@@ -284,7 +318,7 @@
   padding: 0.45rem 0.6rem;
 }
 
-/* ---------- TABLES (Accounts, Feedback) ---------- */
+/* ---------- TABLES (Accounts, Feedback, ListServices) ---------- */
 .admin table {
   width: 100%;
   border-collapse: separate;
@@ -382,7 +416,7 @@
   border: 2px dashed var(--border);
   background: #fff7fb;
   border-radius: 16px;
-  padding: 18px;
+  padding: 12px;             /* smaller */
   text-align: center;
   color: var(--muted);
 }
@@ -391,14 +425,15 @@
   display: none;
 }
 
-.admin .uploader .preview-grid {
+/* previews live outside .uploader in your JSX, so style generically */
+.admin .preview-grid {
   margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 10px;
 }
 
-.admin .uploader .thumb {
+.admin .thumb {
   position: relative;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -407,13 +442,13 @@
   background: #fdf2ff;
 }
 
-.admin .uploader .thumb img {
+.admin .thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.admin .uploader .thumb .remove {
+.admin .thumb .remove {
   position: absolute;
   top: 6px;
   right: 6px;
