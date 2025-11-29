@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "../user-pages.css";
+import { sendInvitations, listUserInvitations, listServices } from "../../api/client";
 
 const STORAGE_KEY_PLAN = "weddingPlanServices";
-const STORAGE_KEY_INVITATIONS = "weddingInvitations";
 
 function loadPlan() {
   try {
@@ -13,23 +13,7 @@ function loadPlan() {
   }
 }
 
-function loadInvitations() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_INVITATIONS);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveInvitations(invitations) {
-  localStorage.setItem(STORAGE_KEY_INVITATIONS, JSON.stringify(invitations));
-}
-
-export default function SendInvitations({ onExit }) {
-  const [invitations, setInvitations] = useState(() => loadInvitations());
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  
+export default function SendInvitations({ onExit, userId }) {
   const [design, setDesign] = useState({
     template: "elegant",
     primaryColor: "#8b5cf6",
@@ -37,48 +21,51 @@ export default function SendInvitations({ onExit }) {
     coupleName: "",
     eventDate: "",
     eventTime: "",
-    venueName: ""
+    venueName: "",
   });
-
   const [recipients, setRecipients] = useState([""]);
   const [shareableLink, setShareableLink] = useState("");
   const [sent, setSent] = useState(false);
+  const [allInvitations, setAllInvitations] = useState([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [error, setError] = useState("");
+  const [allVenues, setAllVenues] = useState([]);
 
-  // Check if venue is booked (reads from localStorage directly for real-time updates)
-  const hasVenue = useMemo(() => {
-    const currentPlan = loadPlan();
-    return currentPlan.some((service) => service.categoryId === "venue");
-  }, [refreshTrigger]);
-
-  // Get venue name for invitation (reads from localStorage directly)
-  const venueService = useMemo(() => {
-    const currentPlan = loadPlan();
-    return currentPlan.find((service) => service.categoryId === "venue") || null;
-  }, [refreshTrigger]);
-
-  // Refresh plan data when component mounts or when user might have added a venue
+  // Fetch venues from backend
   useEffect(() => {
-    // Refresh on mount to get latest data
-    setRefreshTrigger((prev) => prev + 1);
+    listServices({ service_type: "Venue" }).then(setAllVenues);
   }, []);
 
-  // Update venue name when venue service changes
+  // Venue logic: try to find venue from plan or use first available from database
+  const venueService = useMemo(() => {
+    const currentPlan = loadPlan();
+    const planVenue = currentPlan.find((service) => service.categoryId === "venue");
+    // If venues are loaded, try to match by name first, otherwise use first available
+    if (allVenues.length > 0) {
+      if (planVenue) {
+        const matchedVenue = allVenues.find((v) => v.name === planVenue.name);
+        if (matchedVenue) return matchedVenue;
+      }
+      // Use first available venue as fallback
+      return allVenues[0];
+    }
+    // If no venues in DB, return null (we'll handle this in send)
+    return null;
+  }, [refreshTrigger, allVenues]);
+  // Allow sending even without venue (venue info will be in message/design)
+  const hasVenue = true; // Always allow, venue is optional now
+
+  // On component load or after sending invite, load backend invitations history
+  useEffect(() => {
+    if (userId) listUserInvitations(userId).then(setAllInvitations);
+  }, [sent, userId]);
+
+  // Use venue in invitation design auto
   useEffect(() => {
     if (venueService) {
-      setDesign((prev) => ({
-        ...prev,
-        venueName: venueService.name || ""
-      }));
+      setDesign((prev) => ({ ...prev, venueName: venueService.name || "" }));
     }
   }, [venueService]);
-
-  // Generate shareable link
-  function generateShareableLink() {
-    const linkId = `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const link = `${window.location.origin}/invitation/${linkId}`;
-    setShareableLink(link);
-    return link;
-  }
 
   function handleDesignChange(field, value) {
     setDesign((prev) => ({ ...prev, [field]: value }));
@@ -100,63 +87,46 @@ export default function SendInvitations({ onExit }) {
     }
   }
 
-  function handleSendInvitations() {
+  async function handleSendInvitations() {
+    setError("");
     const validRecipients = recipients.filter((email) => email.trim() !== "");
-    
     if (validRecipients.length === 0) {
-      alert("Please add at least one recipient email address.");
+      setError("At least one recipient email is required.");
       return;
     }
-
     if (!design.coupleName || !design.eventDate || !design.eventTime) {
-      alert("Please fill in couple name, event date, and event time.");
+      setError("Please fill in couple name, event date, and event time.");
       return;
     }
-
-    const link = generateShareableLink();
-    const newInvitation = {
-      id: `invite-${Date.now()}`,
-      design: { ...design },
-      recipients: validRecipients,
-      shareableLink: link,
-      sentAt: new Date().toISOString(),
-      status: "sent"
-    };
-
-    setInvitations((prev) => [...prev, newInvitation]);
-    setSent(true);
-
-    // Simulate sending emails
-    console.log("Sending invitations to:", validRecipients);
-    console.log("Shareable link:", link);
+    try {
+      // Basic message as JSON: design fields
+      const message = JSON.stringify({ ...design });
+      // Use venue_id if available, otherwise use null (backend will handle)
+      const venue_id = venueService ? Number(venueService.id) : null;
+      const result = await sendInvitations(
+        venue_id,
+        validRecipients.map((e) => ({ recipient_name: e, recipient_email: e })),
+        message,
+        userId
+      );
+      // Use the invitation ID from backend response
+      const invitationId = result.invitation_id || Date.now();
+      setShareableLink(`${window.location.origin}/invitation/shared/${invitationId}`);
+      setSent(true);
+      setRecipients([""]);
+      setRefreshTrigger((r) => r + 1);
+      setError("");
+    } catch (err) {
+      setError(err?.response?.data?.error || err.message || "Send failed.");
+    }
   }
 
   const templates = [
     { id: "elegant", name: "Elegant", preview: "🎩" },
     { id: "romantic", name: "Romantic", preview: "💕" },
     { id: "modern", name: "Modern", preview: "✨" },
-    { id: "classic", name: "Classic", preview: "👗" }
+    { id: "classic", name: "Classic", preview: "👗" },
   ];
-
-  if (!hasVenue) {
-    return (
-      <div className="user-page">
-        <div className="user-container">
-          <div className="user-header">
-            <h2 className="user-title">Send Invitations</h2>
-            <button onClick={onExit} className="user-btn-link">Exit</button>
-          </div>
-          <div className="user-alert user-alert-warning">
-            <div style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Venue Required</div>
-            <div style={{ marginBottom: "1rem" }}>
-              Please book a venue in "Manage Wedding Services" before sending invitations.
-            </div>
-            <button onClick={onExit} className="user-btn-secondary">Go Back</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="user-page">
@@ -167,14 +137,13 @@ export default function SendInvitations({ onExit }) {
               <h2 className="user-title">Send Invitations</h2>
               <button onClick={onExit} className="user-btn-link">Exit</button>
             </div>
-
+            {error && (<div className="user-alert user-alert-danger">{error}</div>)}
             {!sent ? (
               <>
                 {/* Design Customization */}
                 <div className="user-section">
                   <div className="user-card">
                     <h3 className="user-section-title">Design Customization</h3>
-                    
                     <div style={{ marginBottom: "1.5rem" }}>
                       <label className="user-label">Template</label>
                       <div className="user-nav">
@@ -189,7 +158,6 @@ export default function SendInvitations({ onExit }) {
                         ))}
                       </div>
                     </div>
-
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
                       <div>
                         <label className="user-label">Primary Color</label>
@@ -212,7 +180,6 @@ export default function SendInvitations({ onExit }) {
                         />
                       </div>
                     </div>
-
                     <div style={{ marginBottom: "1.5rem" }}>
                       <label className="user-label">Couple Name</label>
                       <input
@@ -223,7 +190,6 @@ export default function SendInvitations({ onExit }) {
                         className="user-input"
                       />
                     </div>
-
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
                       <div>
                         <label className="user-label">Event Date</label>
@@ -244,7 +210,6 @@ export default function SendInvitations({ onExit }) {
                         />
                       </div>
                     </div>
-
                     <div style={{ marginBottom: "1.5rem" }}>
                       <label className="user-label">Venue Name</label>
                       <input
@@ -257,7 +222,6 @@ export default function SendInvitations({ onExit }) {
                     </div>
                   </div>
                 </div>
-
                 {/* Recipient List */}
                 <div className="user-section">
                   <div className="user-card">
@@ -294,7 +258,6 @@ export default function SendInvitations({ onExit }) {
                     </div>
                   </div>
                 </div>
-
                 {/* Preview */}
                 <div className="user-section">
                   <div className="user-card" style={{ background: design.secondaryColor }}>
@@ -315,7 +278,6 @@ export default function SendInvitations({ onExit }) {
                     </div>
                   </div>
                 </div>
-
                 <button
                   onClick={handleSendInvitations}
                   className="user-btn"
@@ -374,26 +336,21 @@ export default function SendInvitations({ onExit }) {
               </div>
             )}
           </div>
-
           {/* Sidebar - Sent Invitations History */}
           <aside className="user-sidebar">
             <div className="user-sidebar-title">Invitation History</div>
-            {invitations.length === 0 ? (
+            {allInvitations.length === 0 ? (
               <div className="user-empty">
                 <div className="user-empty-text">No invitations sent yet.</div>
               </div>
             ) : (
               <div style={{ display: "grid", gap: "0.75rem" }}>
-                {invitations.map((inv) => (
+                {allInvitations.map((inv) => (
                   <div key={inv.id} className="user-sidebar-item">
-                    <div className="user-sidebar-item-title">{inv.design.coupleName || "Untitled"}</div>
-                    <div className="user-sidebar-item-text">
-                      {inv.recipients.length} recipient(s)
-                    </div>
-                    <div className="user-sidebar-item-text">
-                      {new Date(inv.sentAt).toLocaleDateString()}
-                    </div>
-                    <span className="user-badge user-badge-success" style={{ marginTop: "0.5rem", display: "inline-block" }}>{inv.status}</span>
+                    <div className="user-sidebar-item-title">{inv.recipient_name}</div>
+                    <div className="user-sidebar-item-text">{inv.recipient_email}</div>
+                    <div className="user-sidebar-item-text">Venue: {inv.venue_address}</div>
+                    <span className="user-badge user-badge-success" style={{ marginTop: "0.5rem", display: "inline-block" }}>sent</span>
                   </div>
                 ))}
               </div>

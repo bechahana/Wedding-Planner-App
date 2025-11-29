@@ -1,76 +1,49 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "../user-pages.css";
+import { listVendorsWithSlots, bookAppointment, listUserAppointments } from "../../api/client";
 
-const STORAGE_KEY = "weddingAppointments";
+// Mapping to match your DB service_type values
+const APPOINTMENT_TYPE_TO_SERVICE_TYPE = {
+  venue_check: "Venue",
+  cake_tasting: "Cake Baker"
+};
 
-function loadAppointments() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveAppointments(appointments) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
-}
-
-export default function BookAppointment({ onExit }) {
+export default function BookAppointment({ onExit, userId }) {
   const appointmentTypes = [
     { id: "venue_check", label: "Check Venue" },
-    { id: "cake_tasting", label: "Taste Cake" }
+    { id: "cake_tasting", label: "Taste Cake" },
   ];
 
-  const vendors = useMemo(
-    () => [
-      {
-        id: "venue_grandhall",
-        name: "Grand Hall Venue",
-        type: "venue_check",
-        description: "Elegant ballroom in city center",
-        slots: ["2025-11-10 10:00", "2025-11-10 13:00", "2025-11-12 16:00"]
-      },
-      {
-        id: "venue_garden",
-        name: "Garden Terrace Venue",
-        type: "venue_check",
-        description: "Outdoor venue with greenery",
-        slots: ["2025-11-11 09:30", "2025-11-14 15:00"]
-      },
-      {
-        id: "bakery_gourmet",
-        name: "Gourmet Cakes",
-        type: "cake_tasting",
-        description: "Artisanal wedding cakes and tastings",
-        slots: ["2025-11-09 11:00", "2025-11-15 14:30"]
-      },
-      {
-        id: "bakery_casual",
-        name: "Casual Bites Bakery",
-        type: "cake_tasting",
-        description: "Comfort cakes and frostings",
-        slots: [] // demonstrate alternative flow: no slots
-      }
-    ],
-    []
-  );
-
-  const [appointments, setAppointments] = useState(() => loadAppointments());
+  const [vendors, setVendors] = useState([]);
   const [selectedType, setSelectedType] = useState(appointmentTypes[0].id);
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [confirmation, setConfirmation] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const [loadingVendors, setLoadingVendors] = useState(false);
+  const [loadingBooking, setLoadingBooking] = useState(false);
+  const [error, setError] = useState("");
+
+  // Fetch vendors when appointment type changes (with fixed mapping)
+  useEffect(() => {
+    setLoadingVendors(true);
+    setVendors([]);
+    setSelectedVendorId(null);
+    setSelectedSlot(null);
+    setConfirmation(null);
+    setError("");
+    const serviceType = APPOINTMENT_TYPE_TO_SERVICE_TYPE[selectedType];
+    listVendorsWithSlots(serviceType)
+      .then((res) => setVendors(res))
+      .catch(() => setError("Could not load vendors."))
+      .finally(() => setLoadingVendors(false));
+  }, [selectedType]);
 
   useEffect(() => {
-    saveAppointments(appointments);
-  }, [appointments]);
+    if (userId) listUserAppointments(userId).then(setAppointments);
+  }, [confirmation, userId]);
 
-  const filteredVendors = useMemo(
-    () => vendors.filter((v) => v.type === selectedType),
-    [vendors, selectedType]
-  );
-
+  const filteredVendors = vendors;
   const activeVendor = useMemo(
     () => filteredVendors.find((v) => v.id === selectedVendorId) || null,
     [filteredVendors, selectedVendorId]
@@ -80,24 +53,32 @@ export default function BookAppointment({ onExit }) {
     setSelectedVendorId(null);
     setSelectedSlot(null);
     setConfirmation(null);
+    setError("");
   }
 
-  function handleConfirm() {
+  async function handleConfirm() {
     if (!activeVendor || !selectedSlot) return;
-    const newBooking = {
-      id: `${activeVendor.id}_${selectedSlot}`,
-      vendorId: activeVendor.id,
-      vendorName: activeVendor.name,
-      type: selectedType,
-      slot: selectedSlot,
-      createdAt: new Date().toISOString()
-    };
-    setAppointments((prev) => {
-      const exists = prev.find((a) => a.id === newBooking.id);
-      if (exists) return prev;
-      return [...prev, newBooking];
-    });
-    setConfirmation(newBooking);
+    setLoadingBooking(true);
+    setError("");
+    try {
+      const payload = {
+        service_id: activeVendor.id,
+        appointment_type: selectedType,
+        start_datetime: selectedSlot,
+      };
+      const res = await bookAppointment({ ...payload, user_id: userId });
+      if (res.ok) {
+        setConfirmation({ vendorName: activeVendor.name, slot: selectedSlot });
+      } else {
+        setError(res.error || "Booking failed.");
+      }
+    } catch (err) {
+      setError(
+        err?.response?.data?.error || err.message || "Could not book appointment."
+      );
+    } finally {
+      setLoadingBooking(false);
+    }
   }
 
   return (
@@ -109,20 +90,26 @@ export default function BookAppointment({ onExit }) {
               <h2 className="user-title">Book Appointment</h2>
               <button onClick={onExit} className="user-btn-link">Exit</button>
             </div>
-
             <div className="user-nav">
               {appointmentTypes.map((t) => (
                 <button
                   key={t.id}
-                  onClick={() => { setSelectedType(t.id); resetSelection(); }}
+                  onClick={() => {
+                    setSelectedType(t.id);
+                    resetSelection();
+                  }}
                   className={`user-nav-item ${selectedType === t.id ? "active" : ""}`}
                 >
                   {t.label}
                 </button>
               ))}
             </div>
-
-            {!activeVendor && (
+            {error && (
+              <div className="user-alert user-alert-danger">{error}</div>
+            )}
+            {loadingVendors ? (
+              <div className="user-section">Loading vendors...</div>
+            ) : !activeVendor && (
               <div className="user-section">
                 <p className="user-subtitle">Select a vendor</p>
                 <div className="user-grid user-grid-2">
@@ -140,14 +127,12 @@ export default function BookAppointment({ onExit }) {
                 </div>
               </div>
             )}
-
             {activeVendor && !confirmation && (
               <div className="user-section">
                 <button onClick={resetSelection} className="user-back">← Back to Vendors</button>
                 <h3 className="user-title" style={{ marginTop: "0.5rem" }}>{activeVendor.name}</h3>
                 <p className="user-subtitle">{activeVendor.description}</p>
-
-                {activeVendor.slots.length === 0 ? (
+                {(!activeVendor.slots || activeVendor.slots.length === 0) ? (
                   <div className="user-alert user-alert-warning">
                     No slots available. Please choose another vendor or change the appointment type to reschedule.
                   </div>
@@ -159,14 +144,16 @@ export default function BookAppointment({ onExit }) {
                         <label
                           key={s}
                           className="user-card"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.75rem",
-                            cursor: "pointer",
-                            background: selectedSlot === s ? "#f3e8ff" : "#fff",
-                            borderColor: selectedSlot === s ? "#8b5cf6" : "#e5e5e5"
-                          }}
+                          style={
+                            {
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.75rem",
+                              cursor: "pointer",
+                              background: selectedSlot === s ? "#f3e8ff" : "#fff",
+                              borderColor: selectedSlot === s ? "#8b5cf6" : "#e5e5e5"
+                            }
+                          }
                         >
                           <input
                             type="radio"
@@ -183,18 +170,17 @@ export default function BookAppointment({ onExit }) {
                     <div>
                       <button
                         onClick={handleConfirm}
-                        disabled={!selectedSlot}
+                        disabled={!selectedSlot || loadingBooking}
                         className="user-btn"
                         style={{ opacity: selectedSlot ? 1 : 0.5, cursor: selectedSlot ? "pointer" : "not-allowed" }}
                       >
-                        Confirm Booking
+                        {loadingBooking ? "Confirming..." : "Confirm Booking"}
                       </button>
                     </div>
                   </div>
                 )}
               </div>
             )}
-
             {confirmation && (
               <div className="user-alert user-alert-success">
                 <div style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Appointment Confirmed</div>
@@ -202,13 +188,12 @@ export default function BookAppointment({ onExit }) {
                   {confirmation.vendorName} — {confirmation.slot}
                 </div>
                 <div style={{ display: "flex", gap: "0.75rem" }}>
-                  <button onClick={() => { resetSelection(); }} className="user-btn-secondary">Book another</button>
+                  <button onClick={resetSelection} className="user-btn-secondary">Book another</button>
                   <button onClick={onExit} className="user-btn">Done</button>
                 </div>
               </div>
             )}
           </div>
-
           <aside className="user-sidebar">
             <div className="user-sidebar-title">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -224,10 +209,10 @@ export default function BookAppointment({ onExit }) {
               <div style={{ display: "grid", gap: "0.75rem" }}>
                 {appointments.map((a) => (
                   <div key={a.id} className="user-sidebar-item">
-                    <div className="user-sidebar-item-title">{a.vendorName}</div>
-                    <div className="user-sidebar-item-text">{a.slot}</div>
+                    <div className="user-sidebar-item-title">{a.vendor_name || a.vendorName || a.name}</div>
+                    <div className="user-sidebar-item-text">{a.start_datetime || a.slot}</div>
                     <div className="user-sidebar-item-text" style={{ marginTop: "0.25rem" }}>
-                      Type: {a.type === "venue_check" ? "Check Venue" : a.type === "cake_tasting" ? "Taste Cake" : a.type}
+                      Type: {a.appointment_type || a.type}
                     </div>
                   </div>
                 ))}

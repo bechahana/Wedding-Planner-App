@@ -60,9 +60,9 @@ export default function UserDashboard() {
 
         {/* Content */}
         <main className="user-content">
-          {tab === "book" && <BookAppointment />}
+          {tab === "book" && <BookAppointment userId={id} />}
           {tab === "manage" && <ManageServices />}
-          {tab === "invite" && <SendInvitations />}
+          {tab === "invite" && <SendInvitations userId={id} />}
         </main>
       </div>
     </div>

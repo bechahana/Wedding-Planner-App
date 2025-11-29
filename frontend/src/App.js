@@ -18,6 +18,7 @@ import AdminDashboard from "./AdminPortal/AdminDashboard";
 import Home from "./Guest/Home";
 import AddPhotos from "./Guest/AddPhotos";
 import ParkingCapacity from "./Guest/ParkingCapacity";
+import InvitationView from "./Guest/InvitationView";
 
 // Auth API helpers
 import { loginAccount, registerAccount } from "./api/client";
@@ -46,6 +47,8 @@ function App() {
           path="/invite/:invitationId/parking"
           element={<ParkingCapacity />}
         />
+        {/* Shareable invitation link */}
+        <Route path="/invitation/shared/:id" element={<InvitationView />} />
       </Routes>
     </Router>
   );
