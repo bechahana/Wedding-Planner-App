@@ -1,18 +1,12 @@
-// src/Guest/api/client.js
 import axios from "axios";
 
-// In Create React App we use process.env.REACT_APP_*
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
 
-// Base API client
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-/* -----------------------------
-   UPLOAD GUEST PHOTOS
------------------------------- */
 export const uploadGuestPhotos = async (invitationId, files) => {
   const formData = new FormData();
   [...files].forEach((f) => formData.append("photos", f));
@@ -23,26 +17,20 @@ export const uploadGuestPhotos = async (invitationId, files) => {
     { headers: { "Content-Type": "multipart/form-data" } }
   );
 
-  return data; // { ok, count, ... }
+  return data; 
 };
 
-/* -----------------------------
-   SUBMIT GUEST PARKING INFO
------------------------------- */
 export const submitGuestParking = async (invitationId, payload) => {
   const { data } = await api.post(
     `/guests/events/${invitationId}/parking`,
     payload
   );
-  return data; // { ok: true, ... }
+  return data;
 };
 
-/* -----------------------------
-   GET PARKING AVAILABILITY
------------------------------- */
 export const getParkingAvailability = async () => {
   const { data } = await api.get("/guests/parking/availability");
-  return data.available; // number
+  return data.available;
 };
 
 export const loginAccount = (payload) =>
@@ -51,7 +39,6 @@ export const loginAccount = (payload) =>
 export const registerAccount = (payload) =>
   api.post("/auth/register", payload).then((res) => res.data);
 
-// ADMIN: CREATE SERVICE
 export const createService = async (serviceData) => {
   const formData = new FormData();
 
@@ -74,7 +61,7 @@ export const createService = async (serviceData) => {
 
   if (Array.isArray(serviceData.photos)) {
     serviceData.photos.forEach((file) => {
-      formData.append("photos", file); // MUST be "photos" to match upload.array("photos")
+      formData.append("photos", file);
     });
   }
 
@@ -87,18 +74,14 @@ export const createService = async (serviceData) => {
     return res.data;
   } catch (err) {
     console.error("createService error:", err.response?.data || err.message);
-    throw err; // so AddService catches and shows the red alert
+    throw err; 
   }
 };
 
-/* -----------------------------
-   LIST SERVICES (admin + user)
------------------------------- */
 export const listServices = async (options = {}) => {
   const params = {};
 
-  // options.service_type should be exactly one of:
-  // "DJ", "Chef", "Cake Baker", "Florist", "Waiter", "Venue"
+  
   if (options.service_type && options.service_type !== "All") {
     params.service_type = options.service_type;
   }
@@ -107,16 +90,13 @@ export const listServices = async (options = {}) => {
   return Array.isArray(data.services) ? data.services : [];
 };
 
-/* -----------------------------
-   GET SINGLE SERVICE + AVAIL.
------------------------------- */
+
 export const getServiceDetails = async (serviceId) => {
   const { data } = await api.get(`/services/${serviceId}/details`);
   // data = { ok: true, service, availability: [...] }
   return data;
 };
 
-// APPOINTMENTS API
 export const listVendorsWithSlots = async (appointmentType) => {
   const { data } = await api.get("/appointments/vendors", {
     params: { type: appointmentType }
@@ -125,7 +105,6 @@ export const listVendorsWithSlots = async (appointmentType) => {
 };
 
 export const bookAppointment = async (details) => {
-  // details should now include user_id
   const { data } = await api.post("/appointments", details);
   return data;
 };
@@ -134,13 +113,10 @@ export const listUserAppointments = async (user_id) => {
   const { data } = await api.get("/appointments/my", { params: { user_id } });
   return Array.isArray(data.appointments) ? data.appointments : [];
 };
-// If you want a “user-named” alias:
 export const listServicesForUser = listServices;
 
 
-// INVITATIONS API
 export const sendInvitations = async (venue_id, invitations, message, sender_id) => {
-  // invitations: [{ recipient_name, recipient_email }, ...]
   const { data } = await api.post("/invitations", {
     sender_id,
     venue_id,

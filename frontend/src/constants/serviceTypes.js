@@ -1,4 +1,3 @@
-// src/constants/serviceTypes.js
 export const SERVICE_TYPES = [
     "DJ",
     "Chef",

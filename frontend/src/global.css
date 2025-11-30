@@ -1,6 +1,3 @@
-/* -------------------------------------------------------
-   GLOBAL BASE (wedding theme)
-------------------------------------------------------- */
 
 :root {
     --rose: #b33c86;
@@ -12,7 +9,6 @@
     --border-soft: #f0d9e9;
   }
   
-  /* Page base */
   body {
     margin: 0;
     font-family: "Poppins", "Helvetica Neue", Arial, sans-serif;
@@ -20,22 +16,15 @@
     color: var(--text-main);
   }
   
-  /* Links */
   a {
     text-decoration: none;
     color: inherit;
   }
   
-  /* Generic container */
   .container {
     width: 90%;
     margin: 0 auto;
   }
-  
-  /* -------------------------------------------------------
-     TOP NAVBAR (used everywhere)
-  ------------------------------------------------------- */
-  
   .nav {
     background: #ffffffcc;
     backdrop-filter: blur(8px);
@@ -55,16 +44,11 @@
     color: var(--rose);
   }
   
-  /* Optional: right-aligned nav actions */
   .nav-actions {
     display: flex;
     gap: 12px;
     align-items: center;
   }
-  
-  /* -------------------------------------------------------
-     GENERIC CARD LAYOUT
-  ------------------------------------------------------- */
   
   .page-wrapper-center {
     display: flex;
@@ -84,15 +68,10 @@
     box-sizing: border-box;
   }
   
-  /* Fade-in animation used by cards */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  
-  /* -------------------------------------------------------
-     TITLES & TEXT
-  ------------------------------------------------------- */
   
   .page-title {
     margin-bottom: 10px;
@@ -115,10 +94,6 @@
     margin-bottom: 30px;
   }
   
-  /* -------------------------------------------------------
-     BUTTONS (shared)
-  ------------------------------------------------------- */
-  
   .btn {
     display: inline-block;
     padding: 10px 16px;
@@ -136,14 +111,12 @@
     cursor: not-allowed;
   }
   
-  /* Large buttons (home, main actions) */
   .btn-large {
     width: 100%;
     padding: 14px 18px;
     font-size: 1.1rem;
   }
   
-  /* Neutral soft buttons */
   .btn-violet {
     background-color: #ece9f0;
     border-color: #dcd8e2;
@@ -164,7 +137,6 @@
     background-color: #eae9e3;
   }
   
-  /* Primary gradient button (upload, confirm) */
   .btn-primary-gradient {
     background: linear-gradient(135deg, var(--rose), var(--lavender));
     color: #fff;
@@ -178,9 +150,6 @@
     box-shadow: 0 6px 15px rgba(179, 60, 134, 0.4);
   }
   
-  /* -------------------------------------------------------
-     HOME (Guest / User welcome)
-  ------------------------------------------------------- */
   
   .home-wrapper {
     display: flex;
@@ -189,25 +158,16 @@
   }
   
   .home-card {
-    /* reuse generic card */
     composes: card-elegant;
     text-align: center;
   }
   
-  /* If composes is not supported, you can just add: */
-  /* .home-card { @extend .card-elegant; } in SCSS, or
-     manually copy card-elegant styles into .home-card. */
   
-  /* Buttons block on home */
   .home-buttons {
     display: flex;
     flex-direction: column;
     gap: 15px;
   }
-  
-  /* -------------------------------------------------------
-     ADD PHOTOS PAGE
-  ------------------------------------------------------- */
   
   .add-photos-wrapper {
     display: flex;
@@ -216,7 +176,6 @@
   }
   
   .add-photos-card {
-    /* reuse generic card */
     composes: card-elegant;
   }
   
@@ -240,7 +199,6 @@
     font-size: 1rem;
   }
   
-  /* Form */
   .add-form label {
     display: block;
     margin-bottom: 6px;
@@ -275,13 +233,11 @@
     margin-top: 12px;
   }
   
-  /* Upload button */
   .btn-upload {
     width: 100%;
     margin-top: 25px;
   }
   
-  /* Status bubble */
   .status-badge {
     background: #fff0fa;
     color: var(--rose);

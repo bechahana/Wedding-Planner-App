@@ -1,4 +1,3 @@
-/* ===================== General Layout (wedding theme) ===================== */
 .auth-page {
   display: flex;
   justify-content: center;
@@ -19,7 +18,6 @@
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
 }
 
-/* left side = form */
 .auth-left {
   flex: 1;
   display: flex;
@@ -27,7 +25,6 @@
   justify-content: center;
 }
 
-/* main card */
 .auth-container {
   background: #ffffffdd;
   backdrop-filter: blur(10px);
@@ -64,33 +61,31 @@
   margin-bottom: 1.5rem;
 }
 
-/* ===================== Form ===================== */
-/* === FINAL AUTH FORM LAYOUT === */
 .auth-form {
   display: flex;
   flex-direction: column;
-  row-gap: 0.5rem;    /* 🔥 small space between label & input */
+  row-gap: 0.5rem;   
 }
 
 
 .auth-label {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #b33c86; /* 💖 pink-themed label text */
-  margin-bottom: 0.45rem; /* ✔ consistent spacing above every input */
+  color: #b33c86;
+  margin-bottom: 0.45rem; 
   display: inline-block;
 }
 
 .auth-password-toggle button {
-  color: #b33c86;  /* matches theme */
+  color: #b33c86;  
 }
 .auth-password-toggle {
-  margin-bottom: 0 !important; /* prevents space collapse */
+  margin-bottom: 0 !important; 
 }
 
 .auth-input {
   width: 100%;
-  padding: 1rem;                  /* height similar to button */
+  padding: 1rem;                  
   border: 1px solid #e5c5e4;
   border-radius: 12px;
   font-size: 1rem;
@@ -129,11 +124,10 @@
   accent-color: #b33c86;
 }
 
-/* Password + Confirm stacked vertically like other fields */
 .password-section {
   display: flex;
-  flex-direction: column;  /* 🔥 stack instead of row */
-  gap: 1.4rem;             /* same spacing as other fields */
+  flex-direction: column; 
+  gap: 1.4rem;             
 }
 
 .password-section > div {
@@ -147,14 +141,13 @@
   margin-bottom: 0.8rem;
 }
 
-/* ===================== Buttons ===================== */
 .auth-btn {
   width: 100%;
   background: linear-gradient(135deg, #b33c86, #6a4bac);
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 1.05rem;         /* visually equal to inputs */
+  padding: 1.05rem;        
   font-weight: 500;
   font-size: 1rem;
   cursor: pointer;
@@ -187,7 +180,6 @@
   color: #d94fa6;
 }
 
-/* ===================== Password Toggle ===================== */
 .auth-password-toggle {
   position: relative;
 }
@@ -204,7 +196,6 @@
   cursor: pointer;
 }
 
-/* Misc actions */
 .auth-actions {
   display: flex;
   justify-content: space-between;
@@ -242,17 +233,15 @@
   text-decoration: underline;
 }
 
-/* right side = illustration */
 .auth-illustration {
   flex: 1;
-  background-image: url("../../public/image.jpg");  /* from public/image.jpg */
+  background-image: url("../../public/image.jpg");  
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: cover;
   background-color: #f7f3ff;
 }
 
-/* ===================== Responsive ===================== */
 @media (max-width: 900px) {
   .auth-layout {
     flex-direction: column-reverse;
@@ -287,66 +276,56 @@
     flex-direction: column;
   }
 }
-/* ===== FINAL AUTH SPACING + COLOR OVERRIDES ===== */
 
-/* same vertical spacing between every field group */
-/* === FINAL AUTH FORM LAYOUT === */
 .auth-form {
   display: flex;
   flex-direction: column;
-  row-gap: 0.5rem;    /* 🔥 small space between label & input */
+  row-gap: 0.5rem;   
 }
 
-/* same spacing under every label + pink color */
 .auth-label {
   display: block;
-  margin: 0 0 0.5rem;     /* distance from label to its input */
+  margin: 0 0 0.5rem;     
   font-size: 0.95rem;
   font-weight: 600;
-  color: #b33c86;         /* pink */
+  color: #b33c86;         
 }
 
-/* Password + Confirm behave like normal stacked fields */
 .password-section {
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;            /* same as other groups */
+  gap: 1.4rem;            
 }
 
-/* ensure password field doesn’t mess spacing */
 .auth-password-toggle {
-  margin: 0;              /* no extra space added */
+  margin: 0;              
 }
-/* Compact spacing for form fields */
 .auth-form .field {
-  margin-bottom: 8px;  /* reduce gap between fields */
+  margin-bottom: 8px;  
 }
 
 .auth-form .label {
-  margin-bottom: 2px;  /* smaller gap between label + input */
+  margin-bottom: 2px;  
   font-weight: 600;
-  color: #b33c86; /* theme pink */
+  color: #b33c86; 
 }
 
 .auth-form input {
-  margin: 0; /* ensure no extra browser default margin */
-  padding: 12px 14px; /* keep comfy height */
+  margin: 0;
+  padding: 12px 14px;
 }
 
-/* Reduce space above the button */
 .auth-form .submit-btn {
   margin-top: 6px;
 }
 
-/* Reduce space under headings */
 .auth-form h2 {
   margin-bottom: 4px;
 }
 
 .auth-form .subtitle {
-  margin-bottom: 16px; /* tighter subtitle spacing */
+  margin-bottom: 16px; 
 }
-/* Reduce vertical gaps anywhere inside auth page */
 .auth-page .field,
 .auth-page label,
 .auth-page input,
@@ -354,34 +333,27 @@
 .auth-page p {
   margin-bottom: 6px !important;
 }
-/* === FIXED AUTH FORM SPACING === */
 
-/* Reduce spacing between label and input */
 .auth-label {
   margin-bottom: 4px !important; 
 }
 
-/* Reduce spacing between input groups */
 .auth-input {
   margin-bottom: 10px !important;
 }
 
-/* Reduce gap between title and subtitle */
 .auth-title {
   margin-bottom: 8px !important;
 }
 
-/* Reduce gap under subtitle */
 .auth-subtitle {
   margin-bottom: 14px !important;
 }
 
-/* Reduce spacing before submit button */
 .auth-btn {
   margin-top: 6px !important;
 }
 
-/* Reduce bottom margin for last input (Confirm) */
 .password-section {
   gap: 1rem !important;
 }
