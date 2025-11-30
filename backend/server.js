@@ -14,6 +14,7 @@ const appointmentsRoutes = require("./routes/appointments");
 const invitationsRoutes = require("./routes/invitations");
 const serviceRoutes = require("./routes/services");
 const feedbackRoutes = require("./routes/feedback");
+const albumRoutes = require("./routes/album");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +26,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/services", serviceRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api", albumRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Wedding Guest API is running 🌸");
@@ -40,6 +43,9 @@ app.use("/api/guests", parkingRoutes);
 app.use("/api/accounts", accountsRoutes);
 app.use("/api/appointments", appointmentsRoutes);
 app.use("/api/invitations", invitationsRoutes);
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);

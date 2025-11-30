@@ -87,6 +87,10 @@ router.post("/photos", upload.array("photos", 10), async (req, res) => {
     console.error("Error uploading photos:", err);
     res.status(500).json({ message: "Server error" });
   }
+  await pool.query(
+  "INSERT INTO guest_photos (couple_name, uploaded_by, photo_url) VALUES (?, ?, ?)",
+  [coupleName, guestName, `uploads/services/${file.filename}`]
+);
 });
 
 module.exports = router;

@@ -20,6 +20,8 @@ import Home from "./Guest/Home";
 import AddPhotos from "./Guest/AddPhotos";
 import ParkingCapacity from "./Guest/ParkingCapacity";
 import InvitationView from "./Guest/InvitationView";
+import WeddingAlbum from "./Guest/album";
+
 
 // Auth API helpers
 import { loginAccount, registerAccount } from "./api/client";
@@ -42,6 +44,8 @@ function App() {
         {/* if you ever add guests: <Route path="/guest/:id" ... /> */}
         <Route path="/home" element={<Home />} />
         <Route path="/user/services" element={<BrowseServices />} />
+         <Route path="/album" element={<WeddingAlbum />} />
+
 
         {/* invitation routes keep working */}
         <Route path="/invite/:invitationId/photos" element={<AddPhotos />} />

@@ -1,53 +1,41 @@
-// backend/routes/parking.js
+// routes/parking.js
 const express = require("express");
+const mysql = require("mysql2/promise");
+
 const router = express.Router();
-const pool = require("../config/database");
 
-// POST /api/guests/events/:invitationId/parking
-router.post("/:invitationId/parking", async (req, res) => {
-  const { invitationId } = req.params;
-  const { availableSpots, note, weddingTime } = req.body;
-
-  try {
-    const [weddingRows] = await pool.query(
-      "SELECT id FROM weddings WHERE invitation_id = ?",
-      [invitationId]
-    );
-    if (weddingRows.length === 0) {
-      return res.status(404).json({ message: "Wedding not found" });
-    }
-    const weddingId = weddingRows[0].id;
-
-    const spots =
-      availableSpots === null ||
-      availableSpots === undefined ||
-      availableSpots === ""
-        ? null
-        : Number(availableSpots);
-
-    await pool.query(
-      `INSERT INTO guest_parking (wedding_id, guest_name, available_spots, note, parking_time)
-       VALUES (?, ?, ?, ?, ?)`,
-      [weddingId, null, spots, note || null, weddingTime || null]
-    );
-
-    res.json({ ok: true, message: "Parking information saved" });
-  } catch (err) {
-    console.error("Error saving parking:", err);
-    res.status(500).json({ message: "Server error" });
-  }
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "mysql2025",
+  database: process.env.DB_NAME || "wedding_planner",
 });
 
-// GET /api/guests/parking/availability
-router.get("/parking/availability", async (req, res) => {
+/**
+ * POST /api/guests/parking
+ * Body: { wedding_place, wedding_datetime, car_count, note }
+ */
+router.post("/parking", async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      "SELECT COALESCE(SUM(available_spots), 0) AS available FROM guest_parking"
+    const { wedding_place, wedding_datetime, car_count, note } = req.body;
+
+    if (!wedding_place || !wedding_datetime || !car_count) {
+      return res
+        .status(400)
+        .json({ error: "wedding_place, wedding_datetime and car_count are required" });
+    }
+
+    await pool.query(
+      `INSERT INTO guest_parking 
+       (wedding_place, wedding_datetime, car_count, note) 
+       VALUES (?, ?, ?, ?)`,
+      [wedding_place, wedding_datetime, car_count, note || null]
     );
-    res.json({ available: rows[0].available });
+
+    return res.json({ success: true });
   } catch (err) {
-    console.error("Error fetching availability:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error saving guest parking:", err);
+    return res.status(500).json({ error: "Server error" });
   }
 });
 

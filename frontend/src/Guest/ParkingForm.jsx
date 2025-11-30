@@ -1,10 +1,8 @@
+// src/Guest/ParkingForm.jsx
 import { useState, useEffect } from "react";
 import { submitGuestParking, getParkingAvailability } from "../api/client";
-import Modal from "react-modal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-Modal.setAppElement("#root");
 
 export default function ParkingForm({ invitationId }) {
   const [availableSpots, setAvailableSpots] = useState("");
@@ -12,16 +10,16 @@ export default function ParkingForm({ invitationId }) {
   const [weddingPlace, setWeddingPlace] = useState("");
   const [weddingTime, setWeddingTime] = useState("");
   const [busy, setBusy] = useState(false);
-  const [parkingLeft, setParkingLeft] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [parkingLeft, setParkingLeft] = useState(null); // you can show this later if you want
 
+  // Fetch current parking availability (optional info for later use)
   useEffect(() => {
     async function fetchAvailability() {
       try {
         const available = await getParkingAvailability();
         setParkingLeft(available);
       } catch (err) {
-        console.error("Failed to fetch availability");
+        console.error("Failed to fetch availability", err);
       }
     }
     fetchAvailability();
@@ -32,6 +30,7 @@ export default function ParkingForm({ invitationId }) {
 
     try {
       setBusy(true);
+
       await submitGuestParking(invitationId, {
         availableSpots: availableSpots === "" ? null : Number(availableSpots),
         note: note.trim() || null,
@@ -39,18 +38,25 @@ export default function ParkingForm({ invitationId }) {
         weddingTime: weddingTime.trim() || null,
       });
 
-      toast.success("Thanks! Your parking info has been recorded.");
-      setModalOpen(true);
+      // ✅ Success toast – auto hides thanks to ToastContainer autoClose
+      toast.success(
+        "Thank you! Your form has been submitted. We will inform you about the available parking places."
+      );
 
+      // Clear form
       setAvailableSpots("");
       setNote("");
       setWeddingPlace("");
       setWeddingTime("");
 
+      // Refresh availability (optional)
       const updated = await getParkingAvailability();
       setParkingLeft(updated);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Submission failed.");
+      console.error(err);
+      toast.error(
+        err?.response?.data?.message || "Sorry, something went wrong. Please try again."
+      );
     } finally {
       setBusy(false);
     }
@@ -162,8 +168,6 @@ export default function ParkingForm({ invitationId }) {
 
       <div className="parking-wrapper">
         <form className="parking-card" onSubmit={onSubmit}>
-          
-          {/* Removed big header & invitation ID */}
           <h2 className="parking-title">Inform Parking Capacity</h2>
 
           <div className="parking-field">
@@ -174,6 +178,7 @@ export default function ParkingForm({ invitationId }) {
               placeholder="e.g., Grand Palace Hotel, Garden Venue…"
               value={weddingPlace}
               onChange={(e) => setWeddingPlace(e.target.value)}
+              required
             />
           </div>
 
@@ -185,6 +190,7 @@ export default function ParkingForm({ invitationId }) {
                 type="datetime-local"
                 value={weddingTime}
                 onChange={(e) => setWeddingTime(e.target.value)}
+                required
               />
             </div>
 
@@ -197,6 +203,7 @@ export default function ParkingForm({ invitationId }) {
                 placeholder="e.g., 4"
                 value={availableSpots}
                 onChange={(e) => setAvailableSpots(e.target.value)}
+                required
               />
             </div>
           </div>
@@ -217,7 +224,8 @@ export default function ParkingForm({ invitationId }) {
           </button>
         </form>
 
-        <ToastContainer position="top-right" autoClose={3000} />
+        {/* Toast popup – autoClose=3000 makes it disappear after 3 seconds */}
+        <ToastContainer position="top-right" autoClose={false} />
       </div>
     </>
   );

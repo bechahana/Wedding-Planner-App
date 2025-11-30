@@ -1,5 +1,7 @@
 import { useState, useRef } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+
 
 export default function AddPhotos() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -234,8 +236,24 @@ export default function AddPhotos() {
           <button className="guest-upload-btn" onClick={handleUpload}>
             Upload Photo
           </button>
+           <Link
+  to="/album"
+  style={{
+    display: "block",
+    marginTop: "18px",
+    fontSize: "15px",
+    fontWeight: "600",
+    color: "#b03386",
+    textDecoration: "none"
+  }}
+>
+  📸 View Album
+</Link>
         </div>
       </div>
     </>
+    
   );
+
+
 }
