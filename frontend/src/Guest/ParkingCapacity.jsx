@@ -2,14 +2,15 @@ import { useParams } from "react-router-dom";
 import ParkingForm from "./ParkingForm";
 
 export default function ParkingCapacity() {
-  const { invitationId } = useParams(); // route: /invite/:invitationId/parking
+  const { invitationId } = useParams();
 
   return (
-    <div className="container">
-      <h1>Guest — Parking Capacity</h1>
-      <p className="muted">Invitation ID: {invitationId}</p>
-      <ParkingForm invitationId={invitationId} />
+    // Re-use the same wrapper & card style as the Add Photos page
+    <div className="add-photos-wrapper">
+      <div className="add-photos-card">
+        {/* No big title, no Invitation ID text */}
+        <ParkingForm invitationId={invitationId} />
+      </div>
     </div>
   );
 }
-

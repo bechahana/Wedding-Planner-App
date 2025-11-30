@@ -1,18 +1,13 @@
-/* =========================================================
-   ADMIN THEME (Services, Accounts, Feedback)
-   Wedding palette — scoped with .admin
-   ========================================================= */
 
-/* ---------- THEME TOKENS ---------- */
 .admin {
-  --bg: #fff5f8;              /* soft pink background */
-  --bg-elev: #ffffff;         /* cards */
+  --bg: #fff5f8;              
+  --bg-elev: #ffffff;         
   --text: #1f2933;
   --muted: #6b7280;
   --border: #f1d5ea;
-  --primary: #b33c86;         /* rose */
+  --primary: #b33c86;         
   --primary-contrast: #ffffff;
-  --accent: #6a4bac;          /* lavender */
+  --accent: #6a4bac;         
   --accent-weak: #f7ecff;
   --warn: #b45309;
   --ok: #15803d;
@@ -27,14 +22,13 @@
   min-height: 100vh;
 }
 
-/* Optional dark mode: toggle .dark on root div.admin */
 .admin.dark {
   --bg: #0f1115;
   --bg-elev: #141820;
   --text: #e6e8ee;
   --muted: #9aa3b2;
   --border: #232a35;
-  --primary: #f9a8d4;         /* soft pink in dark mode */
+  --primary: #f9a8d4;         
   --primary-contrast: #0f1115;
   --accent: #a855f7;
   --accent-weak: #2a172f;
@@ -46,7 +40,6 @@
   --shadow-md: 0 10px 30px rgba(0,0,0,0.45);
 }
 
-/* ---------- TOPBAR / LAYOUT / SIDEBAR ---------- */
 .admin .topbar {
   position: sticky;
   top: 0;
@@ -128,22 +121,34 @@
 
 .admin .content {
   padding: 20px 18px 24px;
+  max-width: 1900px;    
+  margin: 0 auto;
 }
 
-/* ---------- PANELS / CARDS ---------- */
 .admin .panel {
   background: var(--bg-elev);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px 18px 20px;
+  padding: 24px 28px 28px;  
   box-shadow: var(--shadow-md);
+  max-width: 1300px;        
+  width: 100%;              
+  margin: 0 auto;
+}
+
+
+.admin .panel form {
+  max-width: 100%;     
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .admin .panel + .panel {
   margin-top: 18px;
 }
 
-/* ---------- TOOLBAR (top of tables/forms) ---------- */
 .admin .toolbar {
   display: flex;
   gap: 12px;
@@ -155,7 +160,13 @@
   flex: 1;
 }
 
-/* ---------- FORMS (Add Service, etc.) ---------- */
+.admin .panel form {
+  max-width: 1100px;  
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 .admin input[type="text"],
 .admin input[type="email"],
 .admin input[type="number"],
@@ -164,18 +175,21 @@
 .admin textarea,
 .admin select {
   width: 100%;
-  padding: 0.7rem 0.85rem;
-  font-size: 0.95rem;
+  padding: 10px 12px;
+  font-size: 0.92rem;
   background: #fff7ff;
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  height: 42px;           
+  box-sizing: border-box;
 }
 
 .admin textarea {
-  min-height: 96px;
+  height: auto;
+  min-height: 100px;       
   resize: vertical;
 }
 
@@ -187,11 +201,10 @@
   background: #fff;
 }
 
-/* two-column form grid that collapses on small screens */
 .admin .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 @media (max-width: 800px) {
   .admin .form-grid {
@@ -199,32 +212,35 @@
   }
 }
 
-/* inline field row */
 .admin .row {
   display: flex;
   gap: 12px;
   align-items: center;
 }
 .admin .row > * {
-  flex: 1;
+  flex: 1;            
 }
 
-/* labels & hints */
+
 .admin .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
+
 .admin .label {
   font-size: 0.9rem;
   font-weight: 600;
+  color: var(--primary);   
 }
+
+
+
 .admin .hint {
   font-size: 0.8rem;
   color: var(--muted);
 }
 
-/* ---------- BUTTONS ---------- */
 .admin .btn {
   display: inline-flex;
   align-items: center;
@@ -258,6 +274,11 @@
   box-shadow: 0 4px 10px rgba(179, 60, 134, 0.3);
 }
 
+.admin .panel form .btn-primary {
+  align-self: flex-end;
+  min-width: 180px;
+}
+
 .admin .btn-primary:hover {
   filter: brightness(1.03);
 }
@@ -284,7 +305,6 @@
   padding: 0.45rem 0.6rem;
 }
 
-/* ---------- TABLES (Accounts, Feedback) ---------- */
 .admin table {
   width: 100%;
   border-collapse: separate;
@@ -322,7 +342,6 @@
   background: #fff0fa;
 }
 
-/* table helpers */
 .admin .table-actions {
   display: flex;
   gap: 8px;
@@ -336,7 +355,6 @@
   font-weight: 600;
 }
 
-/* ---------- BADGES (roles, tags) ---------- */
 .admin .badge {
   display: inline-flex;
   align-items: center;
@@ -377,12 +395,11 @@
   border-color: #2b3340;
 }
 
-/* ---------- UPLOADER (Add Service photos) ---------- */
 .admin .uploader {
   border: 2px dashed var(--border);
   background: #fff7fb;
   border-radius: 16px;
-  padding: 18px;
+  padding: 12px;             
   text-align: center;
   color: var(--muted);
 }
@@ -391,14 +408,14 @@
   display: none;
 }
 
-.admin .uploader .preview-grid {
+.admin .preview-grid {
   margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 10px;
 }
 
-.admin .uploader .thumb {
+.admin .thumb {
   position: relative;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -407,13 +424,13 @@
   background: #fdf2ff;
 }
 
-.admin .uploader .thumb img {
+.admin .thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.admin .uploader .thumb .remove {
+.admin .thumb .remove {
   position: absolute;
   top: 6px;
   right: 6px;
@@ -426,7 +443,6 @@
   font-size: 12px;
 }
 
-/* ---------- DATE GRID (Availability) ---------- */
 .admin .date-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -454,7 +470,6 @@
   border-color: var(--accent);
 }
 
-/* ---------- EMPTY STATES / SKELETON ---------- */
 .admin .empty {
   text-align: center;
   color: var(--muted);
@@ -493,7 +508,6 @@
   }
 }
 
-/* ---------- ALERTS ---------- */
 .admin .alert {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -522,7 +536,6 @@
   color: var(--danger);
 }
 
-/* ---------- PAGINATION ---------- */
 .admin .pagination {
   display: flex;
   gap: 6px;
@@ -546,7 +559,6 @@
   border-color: var(--primary);
 }
 
-/* ---------- SCROLLBARS ---------- */
 .admin * {
   scrollbar-width: thin;
   scrollbar-color: #e0c0e8 transparent;
@@ -567,7 +579,6 @@
   background: #424a57;
 }
 
-/* ======== LOGOUT BUTTON ======== */
 .logout-btn {
   background: linear-gradient(135deg, var(--primary), var(--accent));
   color: #fff;
@@ -595,4 +606,27 @@
 .logout-btn:focus {
   outline: 2px solid #fecaca;
   outline-offset: 2px;
+}
+
+.admin .content {
+  padding: 24px 32px 32px;
+  max-width: none;   
+  margin: 0;        
+}
+
+.admin .panel {
+  max-width: none;   
+  width: 100%;      
+  margin: 0;         
+}
+
+.admin .panel form {
+  max-width: none;
+  width: 100%;
+}
+
+.admin .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }

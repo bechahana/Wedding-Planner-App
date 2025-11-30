@@ -116,6 +116,13 @@ CREATE TABLE IF NOT EXISTS guest_parking (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (wedding_id) REFERENCES weddings(id) ON DELETE CASCADE
 );
+CREATE TABLE guest_photos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  couple_name VARCHAR(255) NOT NULL,
+  uploaded_by VARCHAR(255),
+  photo_url VARCHAR(500) NOT NULL,   -- path to the image file
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- INDEXES
 CREATE INDEX idx_invitation_id ON weddings(invitation_id);

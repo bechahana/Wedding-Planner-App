@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import "./admin.css";
-import { createService } from "../api/client"; // adjust path if needed
+import { createService } from "../api/client"; 
 
 const SERVICE_TYPES = ["DJ", "Chef", "Cake Baker", "Florist", "Waiter", "Venue"];
 
@@ -84,8 +84,6 @@ export default function AddService() {
 
       if (res.ok) {
         setAlert({ type: "ok", msg: "Service added successfully!" });
-
-        // Reset Form
         setName("");
         setAddress("");
         setBio("");
@@ -125,68 +123,118 @@ export default function AddService() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-        
-        {/* SERVICE TYPE */}
-        <div className="field">
-          <label className="label">Service Type</label>
-          <select value={type} onChange={(e) => setType(e.target.value)}>
-            {SERVICE_TYPES.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* NAME */}
-        <div className="field">
-          <label className="label">Service Name</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter name" />
-        </div>
-
-        {/* ADDRESS */}
-        <div className="field">
-          <label className="label">Address</label>
-          <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Enter address" />
-        </div>
-
-        {/* PRICE */}
-        <div className="field">
-          <label className="label">Price (€)</label>
-          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Enter price" />
-        </div>
-
-        {/* CAPACITY FOR VENUE ONLY */}
-        {isVenue && (
+<form onSubmit={handleSubmit}>
+        {/* TOP FIELDS IN TWO COLUMNS */}
+        <div className="form-grid">
+          {/* SERVICE TYPE */}
           <div className="field">
-            <label className="label">Capacity</label>
-            <input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} placeholder="Enter capacity" />
+            <label className="label">Service Type</label>
+            <select value={type} onChange={(e) => setType(e.target.value)}>
+              {SERVICE_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
 
-        {/* DESCRIPTION */}
+          {/* NAME */}
+          <div className="field">
+            <label className="label">Service Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter name"
+            />
+          </div>
+
+          {/* ADDRESS */}
+          <div className="field">
+            <label className="label">Address</label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Enter address"
+            />
+          </div>
+
+          {/* PRICE */}
+          <div className="field">
+            <label className="label">Price (€)</label>
+            <input
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Enter price"
+            />
+          </div>
+
+          {/* CAPACITY FOR VENUE ONLY */}
+          {isVenue && (
+            <div className="field">
+              <label className="label">Capacity</label>
+              <input
+                type="number"
+                value={capacity}
+                onChange={(e) => setCapacity(e.target.value)}
+                placeholder="Enter capacity"
+              />
+            </div>
+          )}
+
+          {/* PHONE */}
+          <div className="field">
+            <label className="label">Phone Number</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+49 123 456 789"
+            />
+          </div>
+
+          {/* EMAIL */}
+          <div className="field">
+            <label className="label">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="example@email.com"
+            />
+          </div>
+        </div>
+
+        {/* DESCRIPTION – FULL WIDTH */}
         <div className="field">
           <label className="label">Description</label>
-          <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Describe the service" />
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Describe the service"
+          />
         </div>
 
-        {/* PHONE */}
-        <div className="field">
-          <label className="label">Phone Number</label>
-          <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+49 123 456 789" />
-        </div>
-
-        {/* EMAIL */}
-        <div className="field">
-          <label className="label">Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="example@email.com" />
-        </div>
-
-        {/* DATES */}
-        <div className="field">
+        {/* DATES – FULL WIDTH */}
+                {/* DATES */}
+                <div className="field">
           <label className="label">Available Dates</label>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <input type="date" value={newDate} onChange={(e) => setNewDate(e.target.value)} />
-            <button type="button" className="btn btn-accent" onClick={addDate}>Add Date</button>
+          <div className="row">
+            <input
+              type="date"
+              value={newDate}
+              onChange={(e) => setNewDate(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn btn-accent"
+              onClick={addDate}
+              style={{ minWidth: 0 }}  
+            >
+              Add Date
+            </button>
           </div>
 
           {dates.length > 0 && (
@@ -194,18 +242,31 @@ export default function AddService() {
               {dates.map((d) => (
                 <div key={d} className="date-pill">
                   {d}
-                  <button type="button" className="icon-btn" onClick={() => removeDate(d)}>✕</button>
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    onClick={() => removeDate(d)}
+                  >
+                    ✕
+                  </button>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* PHOTOS */}
+        {/* PHOTOS – FULL WIDTH */}
         <div className="field">
           <label className="label">Upload Photos</label>
           <label className="uploader" htmlFor="photos">
-            <input id="photos" type="file" accept="image/*" multiple ref={fileInputRef} onChange={handleFileChange} />
+            <input
+              id="photos"
+              type="file"
+              accept="image/*"
+              multiple
+              ref={fileInputRef}
+              onChange={handleFileChange}
+            />
             <div>Click or drag files here</div>
           </label>
 
@@ -214,7 +275,13 @@ export default function AddService() {
               {previews.map((src, i) => (
                 <div key={i} className="thumb">
                   <img src={src} alt={`Preview ${i + 1}`} />
-                  <button type="button" className="remove" onClick={() => removePhoto(i)}>Remove</button>
+                  <button
+                    type="button"
+                    className="remove"
+                    onClick={() => removePhoto(i)}
+                  >
+                    Remove
+                  </button>
                 </div>
               ))}
             </div>
@@ -225,8 +292,8 @@ export default function AddService() {
         <button className="btn btn-primary" disabled={saving}>
           {saving ? "Saving..." : "Save Service"}
         </button>
-
       </form>
+
     </div>
   );
 }

@@ -1,88 +1,106 @@
-/* album.css or inside the style section of Album.jsx */
+body {
+  background: #fcf7fa;
+  font-family: "Inter", sans-serif;
+}
 
-.container {
-  font-family: 'Georgia', serif;
-  background-color: #fef7fc;  /* Very soft, wedding-like background */
-  padding: 20px;
-  border-radius: 15px;
-  max-width: 400px;  /* Make the container smaller */
-  margin: 0 auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+/* Center everything */
+.album-center-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+/* Small elegant box */
+.album-center-box {
+  width: 100%;
+  height: 300px;
+  max-width: 530px;       
+  background: #ffffff;
+  border-radius: 25px;
+  padding: 22px;
   text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
-h2 {
-  color: #6a4dff;
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
-  font-weight: normal;
+/* Small elegant input */
+.album-center-input {
+   width: 80%;  
+   height: 20px;     /* 🔥 Smaller width */
+  max-width: 240px; /* 🔥 Prevent it from being too big */
+  margin: 0 auto;   /* 🔥 Center horizontally */
+  display: block;
+  margin-bottom: 10px;
+  padding: 9px 12px;
+  border-radius: 5px;
+  border: 1px solid #e0d5f4;
+  background: #faf8ff;
+  font-size: 14px;
+  margin-bottom: 12px;
 }
 
-h3 {
-  color: #6a4dff;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-input[type="text"] {
+/* Small center button */
+.album-center-btn {
+  border-top: 70px;
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 2px solid #d3c7d1;  /* Soft lavender border */
-  border-radius: 8px;
-  background-color: #f5f5f5;
-  font-size: 1rem;
-}
-
-input[type="text"]:focus {
-  border-color: #9e6aa7; /* Subtle lavender focus effect */
-  outline: none;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
+  padding: 9px 0;
   border: none;
-  border-radius: 8px;
-  background: #9e6aa7;  /* Elegant lavender button */
+  border-radius: 12px;
+  background: linear-gradient(90deg, #b872d9, #a246c7);
   color: white;
-  font-size: 1.1rem;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
-  margin-top: 15px;
+  transition: 0.2s ease;
 }
 
-button:hover {
-  background: #7b4e7c; /* Darker lavender on hover */
+.album-center-btn:hover {
+  opacity: 0.9;
 }
 
-button:focus {
-  outline: none;
-}
-
-p {
-  color: red;
-  font-size: 1rem;
+/* Soft elegant error */
+.album-center-error {
+  color: #b2468f;
+  font-size: 13px;
   margin-top: 10px;
 }
 
-p.no-photos {
-  color: #9e6aa7; /* Soft lavender color for the "no photos found" message */
-  font-size: 1rem;
-  font-style: italic;
+/* Soft elegant empty message */
+.album-center-empty {
+  color: #7a4ba1;
+  font-size: 13px;
+  margin-top: 12px;
 }
 
-input[type="file"] {
+/* Gallery */
+.album-gallery-wrapper {
+  margin-top: 15px;
+}
+
+.album-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.album-photo-card {
+  background: #faf8ff;
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.album-photo-card img {
   width: 100%;
-  padding: 8px;
-  margin: 10px 0;
-  border: 2px solid #d3c7d1;
-  border-radius: 8px;
-  background-color: #f5f5f5;
-  font-size: 1rem;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
-input[type="file"]:focus {
-  border-color: #9e6aa7;
-  outline: none;
+.album-photo-meta {
+  font-size: 11px;
+  color: #6b5a86;
+  margin-top: 4px;
+  text-align: center;
 }

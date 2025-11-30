@@ -29,72 +29,79 @@ export default function Login({ onLogin, onGoSignUp }) {
 
   return (
     <div className="auth-page">
-      <div className="auth-container">
-        <h2 className="auth-title">Welcome back</h2>
-
-        {err && <div className="auth-error">{err}</div>}
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          <label className="auth-label">Email</label>
-          <input
-            name="email"
-            type="email"
-            className="auth-input"
-            placeholder="you@example.com"
-            value={form.email}
-            onChange={handleChange}
-          />
-
-          <label className="auth-label">Password</label>
-          <div className="auth-password-toggle">
-            <input
-              name="password"
-              type={showPass ? "text" : "password"}
-              className="auth-input"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={handleChange}
-            />
-            <button type="button" onClick={() => setShowPass(s => !s)}>
-              {showPass ? "Hide" : "Show"}
-            </button>
-          </div>
-
-          <div className="auth-actions">
-            <label className="auth-checkbox">
+      <div className="auth-layout">
+        {/* LEFT: all your existing login content */}
+        <div className="auth-left">
+          <div className="auth-container">
+            <h2 className="auth-title">Welcome back</h2>
+  
+            {err && <div className="auth-error">{err}</div>}
+  
+            <form onSubmit={handleSubmit} className="auth-form">
+              <label className="auth-label">Email</label>
               <input
-                type="checkbox"
-                name="remember"
-                checked={form.remember}
+                name="email"
+                type="email"
+                className="auth-input"
+                placeholder="you@example.com"
+                value={form.email}
                 onChange={handleChange}
               />
-              Remember me
-            </label>
-
-            {/* Styled Forgot password button */}
-            <button
-              type="button"
-              className="auth-forgot"
-              onClick={() => alert("Password reset coming soon!")}
-            >
-              Forgot password?
-            </button>
+  
+              <label className="auth-label">Password</label>
+              <div className="auth-password-toggle">
+                <input
+                  name="password"
+                  type={showPass ? "text" : "password"}
+                  className="auth-input"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={handleChange}
+                />
+                <button type="button" onClick={() => setShowPass((s) => !s)}>
+                  {showPass ? "Hide" : "Show"}
+                </button>
+              </div>
+  
+              <div className="auth-actions">
+                <label className="auth-checkbox">
+                  <input
+                    type="checkbox"
+                    name="remember"
+                    checked={form.remember}
+                    onChange={handleChange}
+                  />
+                  Remember me
+                </label>
+  
+                <button
+                  type="button"
+                  className="auth-forgot"
+                  onClick={() => alert("Password reset coming soon!")}
+                >
+                  Forgot password?
+                </button>
+              </div>
+  
+              <button type="submit" className="auth-btn">
+                Sign in
+              </button>
+            </form>
+  
+            <div className="auth-secondary">
+              New here? <button onClick={onGoSignUp}>Create account</button>
+            </div>
+  
+            <div className="guest-option">
+              <button onClick={() => navigate("/home")}>Continue as Guest</button>
+            </div>
           </div>
-
-          <button type="submit" className="auth-btn">Sign in</button>
-        </form>
-
-        <div className="auth-secondary">
-          New here? <button onClick={onGoSignUp}>Create account</button>
         </div>
-
-        {/* Continue as guest */}
-        <div className="guest-option">
-          <button onClick={() => navigate("/home")}>
-            Continue as Guest
-          </button>
-        </div>
+  
+        {/* RIGHT: illustration panel */}
+        <div className="auth-illustration" />
       </div>
     </div>
   );
+  
 }

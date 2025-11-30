@@ -15,7 +15,6 @@ export default function AdminDashboard() {
 
     navigate("/login", { replace: true });
 
-    // 🛑 Prevent back button from returning to admin pages
     window.history.pushState(null, "", "/login");
   };
 
@@ -32,7 +31,7 @@ export default function AdminDashboard() {
     <div className="admin">
       {/* Topbar */}
       <div className="topbar">
-        <div className="brand">Wedding Planner — Admin</div>
+        <div className="brand">Wedding Planner — Admin Panel</div>
         <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>
@@ -41,7 +40,6 @@ export default function AdminDashboard() {
       <div className="layout">
         {/* Sidebar */}
         <aside className="sidebar">
-          <div className="section-title">Admin Panel</div>
           <NavItem id="add-service" label="Add Service" />
           <NavItem id="list-services" label="List Services" />
 

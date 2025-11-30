@@ -10,18 +10,17 @@ import "./global.css";
 import "./App.css";
 import "./User/user-pages.css";
 import UserDashboard from "./User/UserDashboard";
-// Pages
 import Login from "./Authentication/Login";
 import SignUp from "./Authentication/SignUp";
 import AdminDashboard from "./AdminPortal/AdminDashboard";
 import BrowseServices from "./User/ManageServices/BrowseServices";
-
 import Home from "./Guest/Home";
 import AddPhotos from "./Guest/AddPhotos";
 import ParkingCapacity from "./Guest/ParkingCapacity";
 import InvitationView from "./Guest/InvitationView";
+import WeddingAlbum from "./Guest/album";
 
-// Auth API helpers
+
 import { loginAccount, registerAccount } from "./api/client";
 
 function App() {
@@ -42,6 +41,8 @@ function App() {
         {/* if you ever add guests: <Route path="/guest/:id" ... /> */}
         <Route path="/home" element={<Home />} />
         <Route path="/user/services" element={<BrowseServices />} />
+         <Route path="/album" element={<WeddingAlbum />} />
+
 
         {/* invitation routes keep working */}
         <Route path="/invite/:invitationId/photos" element={<AddPhotos />} />
@@ -55,7 +56,6 @@ function App() {
   );
 }
 
-// ---------- Login wrapper ----------
 function LoginPage() {
   const navigate = useNavigate();
 
@@ -71,8 +71,7 @@ function LoginPage() {
       localStorage.setItem("authToken", token);
       localStorage.setItem("currentUser", JSON.stringify(user));
 
-      // ⭐ role-based URL: /role/id
-      const pathRole = (user.role || "").toLowerCase(); // 'ADMIN' -> 'admin'
+      const pathRole = (user.role || "").toLowerCase(); 
       navigate(`/${pathRole}/${user.id}`);
     } catch (err) {
       console.error("Login failed:", err);
@@ -88,7 +87,6 @@ function LoginPage() {
   );
 }
 
-// ---------- SignUp wrapper ----------
 function SignUpPage() {
   const navigate = useNavigate();
 
@@ -105,8 +103,7 @@ function SignUpPage() {
       localStorage.setItem("authToken", token);
       localStorage.setItem("currentUser", JSON.stringify(user));
 
-      // new users always have role = 'USER' from backend
-      const pathRole = (user.role || "").toLowerCase(); // should be 'user'
+      const pathRole = (user.role || "").toLowerCase(); 
       navigate(`/${pathRole}/${user.id}`);
     } catch (err) {
       console.error("Sign up failed:", err);
