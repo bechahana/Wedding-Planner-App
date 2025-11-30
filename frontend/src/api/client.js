@@ -107,7 +107,6 @@ export const listServices = async (options = {}) => {
   return Array.isArray(data.services) ? data.services : [];
 };
 
-// APPOINTMENTS API
 export const listVendorsWithSlots = async (appointmentType) => {
   const { data } = await api.get("/appointments/vendors", {
     params: { type: appointmentType }
@@ -116,7 +115,6 @@ export const listVendorsWithSlots = async (appointmentType) => {
 };
 
 export const bookAppointment = async (details) => {
-  // details should now include user_id
   const { data } = await api.post("/appointments", details);
   return data;
 };
@@ -129,9 +127,7 @@ export const listUserAppointments = async (user_id) => {
 export const listServicesForUser = listServices;
 
 
-// INVITATIONS API
 export const sendInvitations = async (venue_id, invitations, message, sender_id) => {
-  // invitations: [{ recipient_name, recipient_email }, ...]
   const { data } = await api.post("/invitations", {
     sender_id,
     venue_id,

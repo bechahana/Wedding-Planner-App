@@ -49,7 +49,6 @@ function App() {
           path="/invite/:invitationId/parking"
           element={<ParkingCapacity />}
         />
-        {/* Shareable invitation link */}
         <Route path="/invitation/shared/:id" element={<InvitationView />} />
       </Routes>
     </Router>
