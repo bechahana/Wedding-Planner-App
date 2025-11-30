@@ -64,7 +64,7 @@ router.post("/", upload.array("photos", 10), async (req, res) => {
     phone_number,
     email,
     capacity,
-    dates,
+    dates, // availability dates coming from the form
   } = req.body;
 
   if (!service_type || !name || !price || !email) {
@@ -129,6 +129,35 @@ router.post("/", upload.array("photos", 10), async (req, res) => {
       );
     }
 
+    // 4️⃣ availability dates -> service_availability
+    let dateArray = [];
+
+    if (Array.isArray(dates)) {
+      dateArray = dates;
+    } else if (typeof dates === "string" && dates.trim() !== "") {
+      if (dates.trim().startsWith("[")) {
+        // JSON string from frontend
+        try {
+          dateArray = JSON.parse(dates);
+        } catch (e) {
+          console.warn("Could not parse dates JSON:", e.message);
+        }
+      } else {
+        // comma-separated string
+        dateArray = dates.split(",").map((d) => d.trim());
+      }
+    }
+
+    if (dateArray.length > 0) {
+      for (const dateStr of dateArray) {
+        if (!dateStr) continue;
+        await conn.query(
+          "INSERT INTO service_availability (service_id, available_date) VALUES (?, ?)",
+          [serviceId, dateStr]
+        );
+      }
+    }
+
     await conn.commit();
     res.json({ ok: true, id: serviceId });
   } catch (err) {
@@ -143,7 +172,7 @@ router.post("/", upload.array("photos", 10), async (req, res) => {
 /* ----------------------------- GET /services --------------------------- */
 // list services, optionally filtered by ?service_type=DJ etc.
 router.get("/", async (req, res) => {
-  const { service_type } = req.query;
+  const { service_type } = req.query; // DJ, Chef, Cake Baker, Florist, Waiter, Venue
 
   let conn;
   try {
@@ -159,22 +188,31 @@ router.get("/", async (req, res) => {
         s.description,
         s.phone_number,
         s.email,
+        -- next free date (only where is_booked = 0)
+        MIN(CASE WHEN a.is_booked = 0 THEN a.available_date END) AS next_available_date,
         GROUP_CONCAT(p.file_url ORDER BY p.id SEPARATOR ',') AS photo_urls
       FROM wedding_services s
-      LEFT JOIN service_photos p ON p.service_id = s.id
+      LEFT JOIN service_photos p 
+        ON p.service_id = s.id
+      LEFT JOIN service_availability a
+        ON a.service_id = s.id
     `;
     const params = [];
 
     if (service_type) {
       sql += " WHERE s.service_type = ?";
       params.push(service_type);
-      // For Venue type, only return venues that exist in venues table
+
+      // Optional: for Venue, only those that exist in venues table
       if (service_type === "Venue") {
         sql += " AND s.id IN (SELECT service_id FROM venues)";
       }
     }
 
-    sql += " GROUP BY s.id ORDER BY s.service_type ASC, s.name ASC";
+    sql += `
+      GROUP BY s.id
+      ORDER BY s.service_type ASC, s.name ASC
+    `;
 
     const [rows] = await conn.query(sql, params);
 
@@ -188,6 +226,8 @@ router.get("/", async (req, res) => {
       phone_number: row.phone_number,
       email: row.email,
       photos: row.photo_urls ? row.photo_urls.split(",") : [],
+      // 👇 used on the category cards for "Next: date"
+      next_available_date: row.next_available_date,
     }));
 
     res.json({ ok: true, services });
@@ -198,16 +238,21 @@ router.get("/", async (req, res) => {
     if (conn) conn.release();
   }
 });
-/* ----------------------------- GET /services --------------------------- */
-// list services, optionally filtered by ?service_type=DJ etc.
-router.get("/", async (req, res) => {
-  const { service_type } = req.query;   // DJ, Chef, Cake Baker, Florist, Waiter, Venue
 
+
+
+/* ----------------------- GET /services/:id/details --------------------- */
+// returns single service + photos + availability dates
+router.get("/:id/details", async (req, res) => {
+  const { id } = req.params;
   let conn;
+
   try {
     conn = await pool.getConnection();
 
-    let sql = `
+    // 1) Get the service with photos
+    const [serviceRows] = await conn.query(
+      `
       SELECT 
         s.id,
         s.service_type,
@@ -220,23 +265,18 @@ router.get("/", async (req, res) => {
         GROUP_CONCAT(p.file_url ORDER BY p.id SEPARATOR ',') AS photo_urls
       FROM wedding_services s
       LEFT JOIN service_photos p ON p.service_id = s.id
-    `;
-    const params = [];
+      WHERE s.id = ?
+      GROUP BY s.id
+      `,
+      [id]
+    );
 
-    // Add WHERE if a category is requested
-    if (service_type) {
-      sql += ` WHERE s.service_type = ?`;
-      params.push(service_type);
+    if (serviceRows.length === 0) {
+      return res.status(404).json({ ok: false, error: "Service not found" });
     }
 
-    sql += `
-      GROUP BY s.id
-      ORDER BY s.service_type, s.name
-    `;
-
-    const [rows] = await conn.query(sql, params);
-
-    const services = rows.map((row) => ({
+    const row = serviceRows[0];
+    const service = {
       id: row.id,
       service_type: row.service_type,
       name: row.name,
@@ -246,12 +286,29 @@ router.get("/", async (req, res) => {
       phone_number: row.phone_number,
       email: row.email,
       photos: row.photo_urls ? row.photo_urls.split(",") : [],
-    }));
+    };
 
-    res.json({ ok: true, services });
+    // 2) Get availability rows
+    const [availabilityRows] = await conn.query(
+      `
+      SELECT id, available_date, is_booked
+      FROM service_availability
+      WHERE service_id = ?
+      ORDER BY available_date
+      `,
+      [id]
+    );
+
+    res.json({
+      ok: true,
+      service,
+      availability: availabilityRows,
+    });
   } catch (err) {
-    console.error("Error fetching services:", err);
-    res.status(500).json({ ok: false, error: "Failed to fetch services" });
+    console.error("Error fetching service details:", err);
+    res
+      .status(500)
+      .json({ ok: false, error: "Failed to fetch service details" });
   } finally {
     if (conn) conn.release();
   }

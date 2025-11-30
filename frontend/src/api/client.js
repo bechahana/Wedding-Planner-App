@@ -90,6 +90,13 @@ export const listServices = async (options = {}) => {
   return Array.isArray(data.services) ? data.services : [];
 };
 
+
+export const getServiceDetails = async (serviceId) => {
+  const { data } = await api.get(`/services/${serviceId}/details`);
+  // data = { ok: true, service, availability: [...] }
+  return data;
+};
+
 export const listVendorsWithSlots = async (appointmentType) => {
   const { data } = await api.get("/appointments/vendors", {
     params: { type: appointmentType }

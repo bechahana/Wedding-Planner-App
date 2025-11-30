@@ -28,7 +28,7 @@ export default function ManageWeddingServices({ onExit }) {
       SERVICE_TYPES.map((t) => ({
         id: t,
         name: t,
-        description: `Browse available ${t.toLowerCase()} services`
+        description: `Browse available ${t.toLowerCase()} services`,
       })),
     []
   );
@@ -44,6 +44,13 @@ export default function ManageWeddingServices({ onExit }) {
     savePlan(plan);
   }, [plan]);
 
+  async function fetchServices(type) {
+    setLoading(true);
+    const data = await listServices({ service_type: type });
+    setServices(data);
+    setLoading(false);
+  }
+
   function handleSelectCategory(cat) {
     setSelectedCategory(cat);
     setSelectedService(null);
@@ -51,12 +58,8 @@ export default function ManageWeddingServices({ onExit }) {
     fetchServices(cat.id);
   }
 
-  async function fetchServices(type) {
-    setLoading(true);
-    const data = await listServices({ service_type: type });
-    setServices(data);
-    setLoading(false);
-  }
+
+
 
   function handleAddToPlan(service) {
     if (!service) return;
@@ -82,11 +85,16 @@ export default function ManageWeddingServices({ onExit }) {
 
   const compareItems = services.filter((s) => compareSet.has(s.id));
 
+  function handleExitClick() {
+    if (onExit) onExit();
+    // optional: also clear compare selection etc.
+  }
+
   return (
     <div className="user-page">
       <div className="user-container">
         <div className="user-two-column">
-
+          {/* LEFT: categories / services / detail */}
           <div>
             {!selectedCategory && (
               <Categories
@@ -106,6 +114,8 @@ export default function ManageWeddingServices({ onExit }) {
                     onViewDetails={(svc) => setSelectedService(svc)}
                     onToggleCompare={toggleCompare}
                     compareSet={compareSet}
+                    // (if ServicesByCategory has Add to Plan in future)
+                    onAddToPlan={handleAddToPlan}
                   />
                 )}
               </>
@@ -124,14 +134,19 @@ export default function ManageWeddingServices({ onExit }) {
           <aside className="user-sidebar">
             <div className="user-sidebar-title">
               <span>Your Plan</span>
-              <button onClick={onExit} className="user-btn-link user-btn-small">
+              <button
+                onClick={handleExitClick}
+                className="user-btn-link user-btn-small"
+              >
                 Exit
               </button>
             </div>
 
             {plan.length === 0 ? (
               <div className="user-empty">
-                <div className="user-empty-text">No services selected yet.</div>
+                <div className="user-empty-text">
+                  No services selected yet.
+                </div>
               </div>
             ) : (
               <div style={{ display: "grid", gap: "0.75rem" }}>
@@ -156,7 +171,9 @@ export default function ManageWeddingServices({ onExit }) {
                 <div style={{ display: "grid", gap: "0.75rem" }}>
                   {compareItems.map((ci) => (
                     <div key={ci.id} className="user-sidebar-item">
-                      <div className="user-sidebar-item-title">{ci.name}</div>
+                      <div className="user-sidebar-item-title">
+                        {ci.name}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -164,8 +181,12 @@ export default function ManageWeddingServices({ onExit }) {
             )}
           </aside>
 
+
         </div>
       </div>
     </div>
   );
 }
+
+
+
