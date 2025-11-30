@@ -202,8 +202,6 @@ router.get("/", async (req, res) => {
     if (service_type) {
       sql += " WHERE s.service_type = ?";
       params.push(service_type);
-
-      // Optional: for Venue, only those that exist in venues table
       if (service_type === "Venue") {
         sql += " AND s.id IN (SELECT service_id FROM venues)";
       }
