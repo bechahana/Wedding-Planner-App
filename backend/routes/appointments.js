@@ -2,22 +2,19 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/database");
 
-// List vendors by type (with slots)
 router.get("/vendors", async (req, res) => {
   const { type } = req.query;
   let sql = "SELECT ws.id, ws.service_type, ws.name, ws.description FROM wedding_services ws WHERE ws.service_type = ?";
   try {
     const [vendors] = await pool.query(sql, [type]);
 
-    // Add demo slots for each vendor
     const generateSlots = () => {
       const slots = [];
       const now = new Date();
-      // Generate 3-4 slots over the next 2 weeks
       for (let i = 1; i <= 4; i++) {
         const slotDate = new Date(now);
-        slotDate.setDate(now.getDate() + (i * 2)); // Every 2 days
-        const hours = [10, 13, 16]; // 10 AM, 1 PM, 4 PM
+        slotDate.setDate(now.getDate() + (i * 2));
+        const hours = [10, 13, 16];
         const hour = hours[i % hours.length];
         const formatted = `${slotDate.getFullYear()}-${String(slotDate.getMonth() + 1).padStart(2, '0')}-${String(slotDate.getDate()).padStart(2, '0')} ${String(hour).padStart(2, '0')}:00`;
         slots.push(formatted);
@@ -37,7 +34,6 @@ router.get("/vendors", async (req, res) => {
   }
 });
 
-// Book appointment
 router.post("/", async (req, res) => {
   const user_id = req.body.user_id;
   const { service_id, appointment_type, start_datetime, end_datetime } = req.body;
@@ -54,7 +50,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// List user's appointments
 router.get("/my", async (req, res) => {
   const user_id = req.query.user_id;
   if (!user_id) return res.status(400).json({ ok: false, error: "Missing user_id" });

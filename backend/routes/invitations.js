@@ -2,41 +2,34 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/database");
 
-// Send invitations (multi-recipient support, but 1 invite per row, multiple rows)
 router.post("/", async (req, res) => {
   const sender_id = req.body.sender_id;
   let { venue_id, invitations, message } = req.body;
   if (!sender_id) return res.status(400).json({ ok: false, error: "Missing sender_id" });
-  // invitations should be array of {recipient_name, recipient_email}
 
   if (!Array.isArray(invitations) || invitations.length === 0) {
     return res.status(400).json({ ok: false, error: "No recipients provided" });
   }
 
   try {
-    // If no venue_id provided, use first available venue or create one automatically
     if (!venue_id) {
-      // First, try to find an existing venue entry
       const [defaultVenues] = await pool.query(
         `SELECT service_id FROM venues LIMIT 1`
       );
       if (defaultVenues.length > 0) {
         venue_id = defaultVenues[0].service_id;
       } else {
-        // No venues table entries, try to create one from first Venue service
         const [venueServices] = await pool.query(
           `SELECT id, address FROM wedding_services WHERE service_type = 'Venue' LIMIT 1`
         );
         if (venueServices.length > 0) {
           const serviceId = venueServices[0].id;
-          // Create venue entry automatically
           await pool.query(
             `INSERT INTO venues (service_id, address, capacity, parking_capacity) VALUES (?, ?, 200, 50)`,
             [serviceId, venueServices[0].address || 'TBD']
           );
           venue_id = serviceId;
         } else {
-          // No venue services at all - this shouldn't happen, but handle gracefully
           return res.status(400).json({ 
             ok: false, 
             error: "No venues available. Venue information will be stored in the invitation message." 
@@ -45,7 +38,6 @@ router.post("/", async (req, res) => {
       }
     }
 
-    // Validate that venue_id exists in venues table
     const [venueCheck] = await pool.query(
       `SELECT service_id FROM venues WHERE service_id = ?`,
       [venue_id]
@@ -68,7 +60,6 @@ router.post("/", async (req, res) => {
       `INSERT INTO invitations (sender_id, venue_id, recipient_name, recipient_email, message) VALUES ?`,
       [values]
     );
-    // Return the first invitation ID for the shareable link
     const firstInvitationId = result.insertId;
     res.json({ ok: true, message: "Invitations sent.", invitation_id: firstInvitationId });
   } catch (err) {
@@ -77,7 +68,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// List invitations sent by user (must come before /:id route)
 router.get("/my", async (req, res) => {
   const sender_id = req.query.sender_id;
   if (!sender_id) return res.status(400).json({ ok: false, error: "Missing sender_id" });
@@ -93,7 +83,6 @@ router.get("/my", async (req, res) => {
   }
 });
 
-// Get invitation by ID (for shareable links)
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {

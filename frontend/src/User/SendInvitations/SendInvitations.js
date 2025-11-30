@@ -31,36 +31,28 @@ export default function SendInvitations({ onExit, userId }) {
   const [error, setError] = useState("");
   const [allVenues, setAllVenues] = useState([]);
 
-  // Fetch venues from backend
   useEffect(() => {
     listServices({ service_type: "Venue" }).then(setAllVenues);
   }, []);
 
-  // Venue logic: try to find venue from plan or use first available from database
   const venueService = useMemo(() => {
     const currentPlan = loadPlan();
     const planVenue = currentPlan.find((service) => service.categoryId === "venue");
-    // If venues are loaded, try to match by name first, otherwise use first available
     if (allVenues.length > 0) {
       if (planVenue) {
         const matchedVenue = allVenues.find((v) => v.name === planVenue.name);
         if (matchedVenue) return matchedVenue;
       }
-      // Use first available venue as fallback
       return allVenues[0];
     }
-    // If no venues in DB, return null (we'll handle this in send)
     return null;
   }, [refreshTrigger, allVenues]);
-  // Allow sending even without venue (venue info will be in message/design)
-  const hasVenue = true; // Always allow, venue is optional now
+  const hasVenue = true;
 
-  // On component load or after sending invite, load backend invitations history
   useEffect(() => {
     if (userId) listUserInvitations(userId).then(setAllInvitations);
   }, [sent, userId]);
 
-  // Use venue in invitation design auto
   useEffect(() => {
     if (venueService) {
       setDesign((prev) => ({ ...prev, venueName: venueService.name || "" }));
@@ -99,9 +91,7 @@ export default function SendInvitations({ onExit, userId }) {
       return;
     }
     try {
-      // Basic message as JSON: design fields
       const message = JSON.stringify({ ...design });
-      // Use venue_id if available, otherwise use null (backend will handle)
       const venue_id = venueService ? Number(venueService.id) : null;
       const result = await sendInvitations(
         venue_id,
@@ -109,7 +99,6 @@ export default function SendInvitations({ onExit, userId }) {
         message,
         userId
       );
-      // Use the invitation ID from backend response
       const invitationId = result.invitation_id || Date.now();
       setShareableLink(`${window.location.origin}/invitation/shared/${invitationId}`);
       setSent(true);
@@ -140,7 +129,6 @@ export default function SendInvitations({ onExit, userId }) {
             {error && (<div className="user-alert user-alert-danger">{error}</div>)}
             {!sent ? (
               <>
-                {/* Design Customization */}
                 <div className="user-section">
                   <div className="user-card">
                     <h3 className="user-section-title">Design Customization</h3>
@@ -222,7 +210,6 @@ export default function SendInvitations({ onExit, userId }) {
                     </div>
                   </div>
                 </div>
-                {/* Recipient List */}
                 <div className="user-section">
                   <div className="user-card">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
@@ -258,7 +245,6 @@ export default function SendInvitations({ onExit, userId }) {
                     </div>
                   </div>
                 </div>
-                {/* Preview */}
                 <div className="user-section">
                   <div className="user-card" style={{ background: design.secondaryColor }}>
                     <h3 className="user-section-title">Preview</h3>
@@ -336,7 +322,6 @@ export default function SendInvitations({ onExit, userId }) {
               </div>
             )}
           </div>
-          {/* Sidebar - Sent Invitations History */}
           <aside className="user-sidebar">
             <div className="user-sidebar-title">Invitation History</div>
             {allInvitations.length === 0 ? (

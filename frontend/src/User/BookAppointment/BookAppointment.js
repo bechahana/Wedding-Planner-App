@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import "../user-pages.css";
 import { listVendorsWithSlots, bookAppointment, listUserAppointments } from "../../api/client";
 
-// Mapping to match your DB service_type values
 const APPOINTMENT_TYPE_TO_SERVICE_TYPE = {
   venue_check: "Venue",
   cake_tasting: "Cake Baker"
@@ -24,7 +23,6 @@ export default function BookAppointment({ onExit, userId }) {
   const [loadingBooking, setLoadingBooking] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch vendors when appointment type changes (with fixed mapping)
   useEffect(() => {
     setLoadingVendors(true);
     setVendors([]);
