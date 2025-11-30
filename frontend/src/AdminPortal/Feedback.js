@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import "./admin.css";
 
-const API_BASE = "http://localhost:5000"; // adjust if your backend runs elsewhere
+const API_BASE = "http://localhost:5000"; 
 
 export default function Feedback() {
   const [feedbackList, setFeedbackList] = useState([]);
@@ -10,7 +10,6 @@ export default function Feedback() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch feedback from backend
   useEffect(() => {
     let mounted = true;
 
@@ -39,7 +38,6 @@ export default function Feedback() {
     };
   }, []);
 
-  // Filter feedback by search text (name, email, comment)
   const filteredFeedback = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return feedbackList;
@@ -53,7 +51,6 @@ export default function Feedback() {
     });
   }, [feedbackList, search]);
 
-  // Delete feedback
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this feedback?")) return;
 

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import "./admin.css";
-import { createService } from "../api/client"; // adjust path if needed
+import { createService } from "../api/client"; 
 
 const SERVICE_TYPES = ["DJ", "Chef", "Cake Baker", "Florist", "Waiter", "Venue"];
 
@@ -84,8 +84,6 @@ export default function AddService() {
 
       if (res.ok) {
         setAlert({ type: "ok", msg: "Service added successfully!" });
-
-        // Reset Form
         setName("");
         setAddress("");
         setBio("");
@@ -233,7 +231,7 @@ export default function AddService() {
               type="button"
               className="btn btn-accent"
               onClick={addDate}
-              style={{ minWidth: 0 }}  // so flex can shrink nicely
+              style={{ minWidth: 0 }}  
             >
               Add Date
             </button>

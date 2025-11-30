@@ -2,16 +2,15 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./admin.css";
 
-const API_BASE = "http://localhost:5000"; // change if your backend URL is different
+const API_BASE = "http://localhost:5000"; 
 
 export default function Accounts() {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("All"); // All | Admin | User 
+  const [roleFilter, setRoleFilter] = useState("All"); 
 
-  // Fetch accounts from backend
   useEffect(() => {
     let mounted = true;
 
@@ -25,17 +24,14 @@ export default function Accounts() {
         const data = res.data;
         let list = Array.isArray(data) ? data : data.accounts || [];
 
-        // Normalize for UI (role names + active flag)
         list = list.map((acc) => ({
           ...acc,
-          // DB might have ADMIN / USER  – show pretty labels
           role:
             acc.role === "ADMIN"
               ? "Admin"
               : acc.role === "USER"
               ? "User"
               : acc.role,
-          // derive boolean "active" from status if present
           active: acc.status
             ? acc.status.toUpperCase() !== "BANNED"
             : true,
@@ -50,7 +46,7 @@ export default function Accounts() {
         );
         if (mounted) {
           setErr("Failed to load accounts from server.");
-          setAccounts([]); // keep layout visible
+          setAccounts([]); 
         }
       } finally {
         if (mounted) setLoading(false);
@@ -62,7 +58,6 @@ export default function Accounts() {
     };
   }, []);
 
-  // Search + role filter
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     const list = Array.isArray(accounts) ? accounts : [];
@@ -80,7 +75,6 @@ export default function Accounts() {
     });
   }, [accounts, search, roleFilter]);
 
-  // Optimistic ban / unban (server routes can be added later)
   async function toggleBan(acc) {
     const action = acc.active ? "ban" : "unban";
     const confirmMsg = acc.active
@@ -90,7 +84,6 @@ export default function Accounts() {
 
     const prev = [...accounts];
 
-    // optimistic update
     setAccounts((list) =>
       list.map((x) =>
         x.id === acc.id ? { ...x, active: !acc.active } : x
@@ -98,11 +91,10 @@ export default function Accounts() {
     );
 
     try {
-      // backend: PATCH /api/accounts/:id/ban or /unban
       await axios.patch(`${API_BASE}/api/accounts/${acc.id}/${action}`);
     } catch (e) {
       alert(`Failed to ${action}. Reverting.`);
-      setAccounts(prev); // revert if request fails
+      setAccounts(prev); 
     }
   }
 

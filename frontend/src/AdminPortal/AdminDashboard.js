@@ -15,7 +15,6 @@ export default function AdminDashboard() {
 
     navigate("/login", { replace: true });
 
-    // 🛑 Prevent back button from returning to admin pages
     window.history.pushState(null, "", "/login");
   };
 
